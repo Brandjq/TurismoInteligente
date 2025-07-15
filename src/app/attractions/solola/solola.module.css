@@ -1,0 +1,99 @@
+/* solola.module.css */
+
+.container {
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom, #f0f4f8, #d9e2ec);
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #2c3e50;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.description {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #34495e;
+}
+
+.attractionsSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.attractionCard {
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.attractionCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.imageWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.imageWrapper:hover {
+  transform: scale(1.05);
+}
+
+.attractionImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(0.9);
+  transition: filter 0.3s ease;
+}
+
+.imageWrapper:hover .attractionImage {
+  filter: brightness(1);
+}
+
+.description {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  border-radius: 12px;
+  overflow-y: auto;
+}
+
+.imageWrapper:hover .description {
+  opacity: 1;
+}
+
+.attractionName {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

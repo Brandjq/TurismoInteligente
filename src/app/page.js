@@ -339,7 +339,7 @@ export default function Home() {
           <Image src="/rostro.jpg" alt="Historia y leyendas" width={540} height={260} style={{ borderRadius: '18px', marginBottom: '1.2rem', objectFit: 'cover', width: '100%', maxWidth: '540px' }} />
           <h3 style={{ color: '#e91e63' }}>Historias y Leyendas</h3>
           <p>
-            El "Rostro Maya" es una formación montañosa que, según la leyenda local, protege el lago y sus pueblos. Sololá está lleno de historias ancestrales y tradiciones vivas.
+            El &quot;Rostro Maya&quot; es una formación montañosa que, según la leyenda local, protege el lago y sus pueblos. Sololá está lleno de historias ancestrales y tradiciones vivas.
           </p>
         </div>
       </section>

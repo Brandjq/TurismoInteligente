@@ -345,18 +345,30 @@ export default function Home() {
       </section>
       <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
         <Link href="/attractions/solola">
-          <button style={{
-            background: 'linear-gradient(90deg, #1abc9c, #3498db)',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '1.4rem',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '1.3rem 3.2rem',
-            cursor: 'pointer',
-            boxShadow: '0 2px 16px rgba(52,152,219,0.15)',
-            transition: 'background 0.3s'
-          }}>
+          <button
+            style={{
+              background: 'linear-gradient(90deg, #1abc9c 0%, #3498db 100%)',
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: '2rem',
+              border: 'none',
+              borderRadius: '18px',
+              padding: '1.5rem 4rem',
+              cursor: 'pointer',
+              boxShadow: '0 6px 32px rgba(52,152,219,0.18)',
+              transition: 'background 0.3s, transform 0.2s',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '1.2rem',
+              fontFamily: 'Montserrat, Poppins, Arial, sans-serif',
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.06)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <svg width="38" height="38" viewBox="0 0 38 38" fill="none" style={{verticalAlign:'middle'}}>
+              <circle cx="19" cy="19" r="19" fill="#1abc9c"/>
+              <path d="M12 19h14M19 12l7 7-7 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
             Conocer los lugares turísticos de Sololá
           </button>
         </Link>

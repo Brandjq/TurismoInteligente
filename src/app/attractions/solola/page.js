@@ -1,8 +1,11 @@
+"use client";
 // Importar estilos globales y componentes necesarios
 import Image from 'next/image';
 import styles from './solola.module.css';
+import { useState } from 'react';
 
 export default function Solola() {
+  const [modalIndex, setModalIndex] = useState(null);
   const attractions = [
     {
       name: 'San Lucas Tolimán',
@@ -155,6 +158,138 @@ export default function Solola() {
         image: '/volcan.jpg',
         mapLink: 'https://maps.app.goo.gl/RpfaQswKtGe7MQbs8',
       },
+       {
+        name: 'Panajachel',
+        description: 'Conocido popularmente como "Pana", es la principal puerta de entrada al Lago de Atitlán y uno de los destinos turísticos más vibrantes de Sololá. Ubicado en la orilla norte del lago, ofrece una mezcla de cultura local y servicios turísticos. Aquí encontrarás una gran variedad de hoteles, restaurantes, bares y tiendas de artesanías a lo largo de su famosa Calle Santander. Es el punto de partida para las lanchas que conectan con los demás pueblos del lago, y su mercado municipal es un lugar excelente para observar la vida cotidiana y adquirir productos frescos y tejidos.',
+        image: '/pana.jpg',
+        mapLink: 'https://maps.app.goo.gl/m4MFwexMjpjdET7r7',
+      },
+       {
+        name: 'Mercado de Sololá',
+        description: 'Este mercado es una experiencia auténtica y colorida. Se celebra principalmente los martes y viernes en la cabecera departamental, Sololá. Es uno de los mercados indígenas más grandes y tradicionales del altiplano guatemalteco, donde los habitantes de los pueblos circundantes, muchos de ellos vistiendo sus trajes típicos ancestrales, se reúnen para intercambiar productos agrícolas, artesanías y otros bienes. Es un lugar fascinante para observar las costumbres locales y sumergirse en la cultura maya viva.',
+        image: '/mercado.jpg',
+        mapLink: 'https://maps.app.goo.gl/U9pvURFShYxq1kn58',
+      },
+       {
+        name: 'Volcán San Pedro',
+        description: 'Este volcán inactivo, que se eleva majestuosamente sobre la orilla oeste del Lago de Atitlán, es un destino popular para los amantes del senderismo. La caminata hasta su cima ofrece vistas panorámicas espectaculares del lago y sus volcanes circundantes. Durante el ascenso, se atraviesan cafetales y bosques húmedos, lo que lo convierte en una experiencia natural enriquecedora. Es también un buen lugar para la observación de aves.',
+        image: '/volcansan.jpg',
+        mapLink: 'https://maps.app.goo.gl/CcxHdZ6pXmcrbpJn7',
+      },
+       {
+        name: 'Volcán Atitlán y Volcán Tolimán',
+        description: 'Estos dos volcanes, junto con el San Pedro, forman el icónico trío que enmarca el Lago de Atitlán. Son más desafiantes para escalar que el Volcán San Pedro, por lo que son ideales para excursionistas con experiencia que buscan una aventura más exigente. Las recompensas son vistas aún más impresionantes y la satisfacción de conquistar cumbres significativas.',
+        image: '/atitlan.jpg',
+        mapLink: 'https://maps.app.goo.gl/6kb7qpdTjpc3zJXM9',
+      },
+       {
+        name: 'Pascual Abaj (Sololá)',
+        description: 'Este es un sitio ceremonial maya ubicado en las cercanías del pueblo de Sololá. Es un lugar sagrado donde los mayas locales continúan realizando rituales y ofrendas ancestrales a sus deidades. Los visitantes pueden observar estas prácticas culturales y aprender sobre la cosmovisión maya, siempre con respeto por las tradiciones.',
+        image: '/pascual.jpg',
+        mapLink: 'https://maps.app.goo.gl/ykKsxzJLrpMRByZ67',
+      },
+       {
+        name: 'Museo Arqueológico Azul Maya (Panajachel)',
+        description: 'Ubicado en Panajachel, este museo alberga una colección privada de artefactos mayas, incluyendo joyas, cerámica y otros objetos históricos. Ofrece una visión fascinante de la rica historia y cultura de la civilización maya en la región.',
+        image: '/azul.jpg',
+        mapLink: 'https://maps.app.goo.gl/nymCJ4ZVyddZ3WDu9',
+      },
+       {
+        name: 'Iglesia de Saint Francis (Panajachel)',
+        description: 'Esta iglesia en Panajachel es un ejemplo de la arquitectura colonial en la zona. Es un lugar de culto importante para la comunidad local y ofrece un vistazo a la historia religiosa y cultural del pueblo.',
+        image: '/iglesia.jpg',
+        mapLink: 'https://maps.app.goo.gl/SbV6V5cJFpXLMshq9',
+      },
+       {
+        name: 'Mirador Mario Méndez Montenegro (San Antonio Palopó)',
+        description: 'Un mirador específico en San Antonio Palopó que ofrece vistas impresionantes del Lago de Atitlán y los pueblos circundantes. Es un excelente punto para tomar fotografías y apreciar la belleza escénica de la región.',
+        image: '/mirador.jpg',
+        mapLink: 'https://maps.app.goo.gl/DEE6KgeodwARAbLp9',
+      },
+       {
+        name: 'Iglesia San Lucas Evangelista (San Lucas Tolimán)',
+        description: 'Fundada en 1584 por los franciscanos, esta iglesia colonial es un importante hito histórico y arquitectónico en San Lucas Tolimán. Su antigüedad y diseño la convierten en un punto de interés para quienes aprecian el patrimonio religioso.',
+        image: '/iglesiasan.jpg',
+        mapLink: 'https://maps.app.goo.gl/UgA1qa38f6pvy6jX7',
+      },
+       {
+        name: 'Parque Ecológico Saquiché (San Andrés Semetabaj)',
+        description: 'Un espacio natural en el municipio de San Andrés Semetabaj, ideal para disfrutar de la naturaleza, realizar caminatas y relajarse en un entorno tranquilo.',
+        image: '/saquiche.jpg',
+        mapLink: 'https://maps.app.goo.gl/rD5tYtbKqzMcgVXZ6',
+      },
+       {
+        name: 'Parque Ecológico Cerro Lquitiu (San Lucas Tolimán)',
+        description: 'Esta área protegida es un refugio de biodiversidad, especialmente conocida por su bosque nuboso y de montaña. Es un lugar excelente para el ecoturismo y el avistamiento de aves, con más de 80 especies reportadas. Ofrece senderos para explorar la flora y fauna locales.',
+        image: '/lquiti.jpg',
+        mapLink: 'https://maps.app.goo.gl/g64dgv4vokGwv7hZA',
+      },
+       {
+        name: 'Paseo de las Artes (San Juan La Laguna)',
+        description: 'Situado en la calle del embarcadero de San Juan La Laguna, este paseo es un lugar vibrante donde se puede apreciar el arte y la cultura local. Encontrarás galerías, murales y talleres que muestran el talento de los artistas de la comunidad.',
+        image: '/artes.jpg',
+        mapLink: 'https://maps.app.goo.gl/DNsNYEj2mvASynGS8',
+      },
+       {
+        name: 'La Calle de los Sombreros (San Juan La Laguna)',
+        description: 'Como su nombre lo indica, esta calle en San Juan La Laguna es un lugar donde el arte y la cultura abundan. Es conocida por sus tiendas y talleres que exhiben y venden sombreros tradicionales y otras artesanías, reflejando la creatividad de la comunidad.',
+        image: '/sombreros.jpg',
+        mapLink: 'https://maps.app.goo.gl/X2XYDfV7vEFA8pVm8',
+      },
+       {
+        name: 'Mundo de Abejas Mayas (San Juan La Laguna)',
+        description: 'Este lugar ofrece una oportunidad única para aprender sobre las abejas ancestrales mayas sin aguijón y la apicultura tradicional. Los visitantes pueden conocer el proceso de producción de miel y probar este dulce néctar.',
+        image: '/abejas.jpg',
+        mapLink: 'https://maps.app.goo.gl/T1KAeX8F12XEZbNC6',
+      },
+       {
+        name: 'Mirador Rey Tepepul (Santiago Atitlán)',
+        description: 'Un área protegida que ofrece senderos, sitios sagrados y escenarios paisajísticos únicos. Es un lugar donde la fauna y flora interactúan, incluyendo especies endémicas y en peligro de extinción, y donde se fusiona la riqueza de la cultura maya con la naturaleza.',
+        image: '/tepepul.jpg',
+        mapLink: 'https://maps.app.goo.gl/rbPRNv8fGumEXthw8',
+      },
+       {
+        name: 'Museo Textil Cojolya (Santiago Atitlán)',
+        description: 'Este museo en Santiago Atitlán se dedica a preservar y exhibir la rica tradición textil de la región. Muestra la historia, las técnicas y la belleza de los tejidos mayas, muchos de ellos elaborados por las mujeres de la comunidad.',
+        image: '/cojo.jpg',
+        mapLink: 'https://maps.app.goo.gl/th3ogc762BiDtY6A9',
+      },
+       {
+        name: 'Cerro de Oro',
+        description: 'Un rincón pintoresco y menos concurrido cerca del Lago de Atitlán. Se dice que este cerro, con su forma particular, inspiró a Antoine de Saint-Exupéry para escribir "El Principito". Ofrece paisajes hermosos y es un lugar tranquilo para disfrutar de la naturaleza.',
+        image: '/cerroj.jpg',
+        mapLink: 'https://maps.app.goo.gl/Ddp8L3oB9bHdFfRq9',
+      },
+       {
+        name: 'Pueblo Maya de Chutinamit',
+        description: 'Considerado un antiguo pueblo maya y el último bastión de la vida maya tradicional, con sus monumentos intactos. Ofrece a los visitantes una perspectiva única del pasado y la oportunidad de explorar vestigios de una civilización ancestral.',
+        image: '/arq.jpg',
+        mapLink: 'https://maps.app.goo.gl/3xR9CX91zZ8CPhpS7',
+      },
+       {
+        name: 'Jardines Botánicos “La Azotea” (San Antonio Palopó)',
+        description: 'Estos jardines ofrecen espacios tranquilos y hermosos para apreciar la diversidad de la flora local. Son ideales para un paseo relajante, la fotografía y para conectar con la naturaleza en un entorno bien cuidado.',
+        image: '/azotea.jpg',
+        mapLink: 'https://maps.app.goo.gl/7UaQCDNpMMLPXqT59',
+      },
+       {
+        name: 'Museo Mayaland (San José Chacayá)',
+        description: 'Ubicado en San José Chacayá, este museo se divide en tres secciones: Escrituras Mayas, Ofrendas Arqueológicas y La Cultura Maya en Guatemala. Proporciona una gran cantidad de información sobre la historia, costumbres, astronomía y geometría maya, además de ofrecer una vista panorámica del Lago Atitlán.',
+        image: '/cha.jpg',
+        mapLink: 'https://maps.app.goo.gl/GVKAmw619iw1TCWJ6',
+      },
+      {
+        name: 'Casa de los Jerarcas (Lago Atitlán)',
+        description: 'Una casa histórica construida por el Rey Cakchiquel Alvarado en el siglo XV, durante el reinado del famoso rey Tecún Umán. Es un sitio con un gran valor histórico y cultural, que ofrece una ventana al pasado prehispánico de la región.',
+        image: '/casa.jpg',
+        mapLink: 'https://maps.app.goo.gl/uku1qNW2S7Jjepfg9',
+      },
+      {
+        name: 'Parque Ecológico Chuiraxamoló (Santa Clara La Laguna)',
+        description: 'Otro parque ecológico en el departamento, que contribuye a la conservación de la biodiversidad y ofrece un espacio para el ecoturismo y actividades al aire libre en Santa Clara La Laguna.',
+        image: '/ecologico.jpg',
+        mapLink: 'https://maps.app.goo.gl/JatMAVsSTJYvyVCq7',
+      },
   ];
 
   return (
@@ -165,26 +300,111 @@ export default function Solola() {
       </p>
       <section className={styles.attractionsSection}>
         {attractions.map((attraction, index) => (
-          <a
+          <div
             key={index}
-            href={attraction.mapLink}
-            target="_blank"
-            rel="noopener noreferrer"
             className={styles.attractionCard}
+            style={{ cursor: 'pointer' }}
           >
-            <div className={styles.imageWrapper}>
-              <Image
-                src={attraction.image}
-                alt={attraction.name}
-                className={styles.attractionImage}
-                width={500}
-                height={300}
-              />
-              <div className={styles.description}>{attraction.description}</div>
-            </div>
-            <h2 className={styles.attractionName}>{attraction.name}</h2>
-          </a>
+            <a
+              href={attraction.mapLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <div className={styles.imageWrapper}>
+                <Image
+                  src={attraction.image}
+                  alt={attraction.name}
+                  className={styles.attractionImage}
+                  width={500}
+                  height={300}
+                />
+              </div>
+              <h2 className={styles.attractionName}>
+                {attraction.name}
+                <span
+                  style={{ marginLeft: 18, cursor: 'pointer', verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}
+                  title="Ver detalles"
+                  onClick={e => {
+                    e.preventDefault();
+                    setModalIndex(index);
+                  }}
+                >
+                  {/* SVG ojito grande */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="44" height="28" viewBox="0 0 44 28" fill="none">
+                    <path d="M22 5C11.79 5 4.01 12.11 2 14c2.01 1.89 9.79 9 20 9s17.99-7.11 20-9c-2.01-1.89-9.79-9-20-9zM22 21c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#222"/>
+                  </svg>
+                </span>
+              </h2>
+            </a>
+          </div>
         ))}
+        {modalIndex !== null && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.45)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onClick={() => setModalIndex(null)}
+          >
+            <div
+              style={{
+                background: 'white',
+                borderRadius: '24px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                padding: '32px',
+                minWidth: '50vw',
+                maxWidth: '90vw',
+                width: '700px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                position: 'relative',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                style={{
+                  position: 'absolute',
+                  top: 18,
+                  right: 18,
+                  background: '#e53e3e',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  zIndex: 2,
+                }}
+                onClick={() => setModalIndex(null)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+              <Image
+                src={attractions[modalIndex].image}
+                alt={attractions[modalIndex].name}
+                width={600}
+                height={360}
+                style={{ borderRadius: '18px', marginBottom: '24px', objectFit: 'cover' }}
+              />
+              <h2 style={{ fontSize: '2rem', marginBottom: '18px', color: '#222' }}>{attractions[modalIndex].name}</h2>
+              <div style={{ fontSize: '1.15rem', color: '#333', textAlign: 'center', maxHeight: '220px', overflowY: 'auto' }}>
+                {attractions[modalIndex].description}
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );

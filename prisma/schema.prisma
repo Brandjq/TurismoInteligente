@@ -1,33 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Recomendacion {
-  id         Int      @id @default(autoincrement())
-  nombre     String
+  id          Int     @id @default(autoincrement())
+  nombre      String
   descripcion String
-  fecha      String?
-  lugar      String
-  imagen     String?
-  destacado  Boolean  @default(false)
+  fecha       String?
+  lugar       String
+  imagen      String?
+  destacado   Boolean @default(false)
 
-  @@map("recomendaciones")  // <- Aquí le dices que esta tabla se llama "recomendaciones"
+  @@map("recomendaciones")
 }
+
 model Actividad {
-  id          Int      @id @default(autoincrement())
-  nombre      String   @unique
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique
   descripcion String?
 }
+
 model Attraction {
   id          Int     @id @default(autoincrement())
-  name        String
+  name        String  @unique(map: "unique_name")
   description String
-  map_link    String?  // es nullable porque puede no tener link
+  map_link    String?
 
-  @@map("attractions")  // el nombre exacto de la tabla en Neon
+  @@map("attractions")
 }

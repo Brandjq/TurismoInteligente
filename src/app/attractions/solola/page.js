@@ -2,11 +2,17 @@
 // Importar estilos globales y componentes necesarios
 import Image from 'next/image';
 import styles from './solola.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import NewAttractionForm from './NewAttractionForm';
+
 
 export default function Solola() {
   const [modalIndex, setModalIndex] = useState(null);
-  const attractions = [
+  const [showNewForm, setShowNewForm] = useState(false);
+
+  
+  
+  const [attractions, setAttractions] = useState([
     {
       name: 'San Lucas Tolimán',
       description: 'Municipio con vistas al Volcán Tolimán y Cerro de Oro.',
@@ -290,7 +296,8 @@ export default function Solola() {
         image: '/ecologico.jpg',
         mapLink: 'https://maps.app.goo.gl/JatMAVsSTJYvyVCq7',
       },
-  ];
+  
+]);
 
   return (
     <main className={styles.container}>
@@ -298,6 +305,32 @@ export default function Solola() {
       <p className={styles.description}>
         Explora los lugares más destacados de Sololá, llenos de belleza natural y cultural.
       </p>
+
+      <button
+        onClick={() => setShowNewForm(true)}
+        style={{
+          fontSize: '2rem',
+          padding: '0.4rem 1rem',
+          borderRadius: '50%',
+          border: 'none',
+          cursor: 'pointer',
+          marginBottom: '1rem',
+          backgroundColor: '#3182ce',
+          color: 'white',
+          fontWeight: 'bold',
+          lineHeight: 1,
+          width: '40px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          userSelect: 'none',
+        }}
+        aria-label="Agregar nuevo lugar"
+      >
+        +
+      </button>
+
       <section className={styles.attractionsSection}>
         {attractions.map((attraction, index) => (
           <div
@@ -312,13 +345,15 @@ export default function Solola() {
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               <div className={styles.imageWrapper}>
-                <Image
-                  src={attraction.image}
-                  alt={attraction.name}
-                  className={styles.attractionImage}
-                  width={500}
-                  height={300}
-                />
+                {attraction.image && (
+                  <Image
+                    src={attraction.image}
+                   alt={attraction.name || 'Imagen del atractivo turístico'}
+                    className={styles.attractionImage}
+                    width={500}
+                    height={300}
+                  />
+                )}
               </div>
               <h2 className={styles.attractionName}>
                 {attraction.name}
@@ -330,7 +365,7 @@ export default function Solola() {
                     setModalIndex(index);
                   }}
                 >
-                  {/* SVG ojito grande */}
+                  {/* SVG ojito */}
                   <svg xmlns="http://www.w3.org/2000/svg" width="44" height="28" viewBox="0 0 44 28" fill="none">
                     <path d="M22 5C11.79 5 4.01 12.11 2 14c2.01 1.89 9.79 9 20 9s17.99-7.11 20-9c-2.01-1.89-9.79-9-20-9zM22 21c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#222"/>
                   </svg>
@@ -339,73 +374,77 @@ export default function Solola() {
             </a>
           </div>
         ))}
-        {modalIndex !== null && (
+      </section>
+
+      {modalIndex !== null && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.45)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onClick={() => setModalIndex(null)}
+        >
           <div
             style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.45)',
-              zIndex: 9999,
+              background: 'white',
+              borderRadius: '24px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+              padding: '32px',
+              minWidth: '50vw',
+              maxWidth: '90vw',
+              width: '700px',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center',
+              position: 'relative',
             }}
-            onClick={() => setModalIndex(null)}
+            onClick={e => e.stopPropagation()}
           >
-            <div
+            <button
               style={{
-                background: 'white',
-                borderRadius: '24px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-                padding: '32px',
-                minWidth: '50vw',
-                maxWidth: '90vw',
-                width: '700px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                position: 'relative',
+                position: 'absolute',
+                top: 18,
+                right: 18,
+                background: '#e53e3e',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: 36,
+                height: 36,
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                zIndex: 2,
               }}
-              onClick={e => e.stopPropagation()}
+              onClick={() => setModalIndex(null)}
+              aria-label="Cerrar"
             >
-              <button
-                style={{
-                  position: 'absolute',
-                  top: 18,
-                  right: 18,
-                  background: '#e53e3e',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 36,
-                  height: 36,
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  zIndex: 2,
-                }}
-                onClick={() => setModalIndex(null)}
-                aria-label="Cerrar"
-              >
-                ×
-              </button>
-              <Image
-                src={attractions[modalIndex].image}
-                alt={attractions[modalIndex].name}
-                width={600}
-                height={360}
-                style={{ borderRadius: '18px', marginBottom: '24px', objectFit: 'cover' }}
-              />
-              <h2 style={{ fontSize: '2rem', marginBottom: '18px', color: '#222' }}>{attractions[modalIndex].name}</h2>
-              <div style={{ fontSize: '1.15rem', color: '#333', textAlign: 'center', maxHeight: '220px', overflowY: 'auto' }}>
-                {attractions[modalIndex].description}
-              </div>
+              ×
+            </button>
+            <h2 style={{ fontSize: '2rem', marginBottom: '18px', color: '#222' }}>{attractions[modalIndex].name}</h2>
+            <div style={{ fontSize: '1.15rem', color: '#333', textAlign: 'center', maxHeight: '220px', overflowY: 'auto' }}>
+              {attractions[modalIndex].description}
             </div>
           </div>
-        )}
-      </section>
+        </div>
+      )}
+
+      {showNewForm && (
+        <NewAttractionForm
+          onClose={() => setShowNewForm(false)}
+          onSave={(newAttraction) => {
+            setAttractions(prev => [...prev, newAttraction]);
+            setShowNewForm(false);
+          }}
+        />
+      )}
     </main>
   );
 }

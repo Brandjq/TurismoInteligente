@@ -25,11 +25,10 @@ model Actividad {
   descripcion String?
 }
 
-model Attraction {
+model attractions {
   id          Int     @id @default(autoincrement())
   name        String  @unique(map: "unique_name")
   description String
   map_link    String?
-
-  @@map("attractions")
+  image_url   String?
 }

@@ -6,9 +6,14 @@ import { useState, useEffect } from 'react';
 import NewAttractionForm from './NewAttractionForm';
 
 
+
+
 export default function Solola() {
   const [modalIndex, setModalIndex] = useState(null);
   const [showNewForm, setShowNewForm] = useState(false);
+  const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
+
+  
 
   
   
@@ -298,153 +303,327 @@ export default function Solola() {
       },
   
 ]);
+ // ✅ Obtener datos desde la base de datos al cargar
+  useEffect(() => {
+    const fetchAttractions = async () => {
+      try {
+        const res = await fetch('/api/attractions');
+        if (res.ok) {
+          const data = await res.json();
+          setAttractions(data);
+        } else {
+          console.error('Error al cargar datos desde la API');
+        }
+      } catch (err) {
+        console.error('Error de conexión:', err);
+      }
+    };
 
-  return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>Atractivos Turísticos en Sololá</h1>
-      <p className={styles.description}>
-        Explora los lugares más destacados de Sololá, llenos de belleza natural y cultural.
-      </p>
+    fetchAttractions();
+  }, []);
 
+return (
+  <main className={styles.container}>
+   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+  <h1
+  style={{
+    flex: 1,
+    textAlign: 'center',
+    fontFamily: `'Poppins', 'Segoe UI', sans-serif`,
+    fontSize: '3.5rem',
+    fontWeight: '700',
+    color: '#2d3748',
+  }}
+>
+  Atractivos Turísticos en Sololá
+</h1>
+
+  <button
+    onClick={() => setMostrarEstadisticas(true)}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      padding: '0.5rem 1rem',
+      backgroundColor: '#38a169',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+    }}
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" fill="white">
+      <path d="M13 16h-1v-4h-1m2-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+    </svg>
+    Estadísticas
+  </button>
+</div>
+{mostrarEstadisticas && (
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999,
+    }}
+    onClick={() => setMostrarEstadisticas(false)}
+  >
+    <div
+      style={{
+        background: 'white',
+        borderRadius: '16px',
+        padding: '32px',
+        maxWidth: '600px',
+        width: '90%',
+        textAlign: 'center',
+        position: 'relative',
+      }}
+      onClick={(e) => e.stopPropagation()} // Para que no se cierre al hacer clic dentro
+    >
       <button
-        onClick={() => setShowNewForm(true)}
         style={{
-          fontSize: '2rem',
-          padding: '0.4rem 1rem',
-          borderRadius: '50%',
-          border: 'none',
-          cursor: 'pointer',
-          marginBottom: '1rem',
-          backgroundColor: '#3182ce',
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          background: '#e53e3e',
           color: 'white',
-          fontWeight: 'bold',
-          lineHeight: 1,
-          width: '40px',
-          height: '40px',
+          border: 'none',
+          borderRadius: '50%',
+          width: 30,
+          height: 30,
+          fontSize: '1.2rem',
+          cursor: 'pointer',
+        }}
+        onClick={() => setMostrarEstadisticas(false)}
+      >
+        ×
+      </button>
+      <h2 style={{ fontSize: '1.8rem', marginBottom: '1rem', color: '#2d3748' }}>
+        Estadísticas de Turismo en Sololá
+      </h2>
+      <p style={{ fontSize: '1.1rem', color: '#444' }}>
+        Aproximadamente <strong>1.2 millones</strong> de turistas nacionales e internacionales visitan el
+        departamento de Sololá cada año, atraídos por su impresionante naturaleza, cultura maya viva y el
+        majestuoso Lago de Atitlán.
+      </p>
+    </div>
+  </div>
+)}
+
+
+    <p className={styles.description}>
+      Explora los lugares más destacados de Sololá, llenos de belleza natural y cultural.
+    </p>
+
+  <button
+  onClick={() => setShowNewForm(true)}
+  style={{
+    fontSize: '1.5rem',
+    padding: '0.4rem 1rem',
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    marginBottom: '1rem',
+    backgroundColor: '#3182ce',
+    color: 'white',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem', // espacio entre + y texto
+  }}
+  aria-label="Agregar nuevo lugar"
+>
+  <span style={{ fontSize: '2rem', lineHeight: 1 }}>+</span> Agregar Nuevo Lugar
+</button>
+
+
+    <section className={styles.attractionsSection}>
+      {attractions.map((attraction, index) => (
+        <div
+          key={index}
+          className={styles.attractionCard}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className={styles.imageWrapper}>
+            {attraction.image_url && (
+              <Image
+                src={attraction.image_url}
+                alt={attraction.name || 'Imagen del atractivo turístico'}
+                className={styles.attractionImage}
+                width={500}
+                height={300}
+              />
+            )}
+          </div>
+
+          <h2 className={styles.attractionName}>
+            {attraction.name}
+            <span
+              style={{
+                marginLeft: 18,
+                cursor: 'pointer',
+                verticalAlign: 'middle',
+                display: 'inline-flex',
+                alignItems: 'center',
+              }}
+              title="Ver detalles"
+              onClick={e => {
+                e.preventDefault();
+                setModalIndex(index);
+              }}
+            >
+              {/* SVG ojito */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="44"
+                height="28"
+                viewBox="0 0 44 28"
+                fill="none"
+              >
+                <path
+                  d="M22 5C11.79 5 4.01 12.11 2 14c2.01 1.89 9.79 9 20 9s17.99-7.11 20-9c-2.01-1.89-9.79-9-20-9zM22 21c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                  fill="#222"
+                />
+              </svg>
+            </span>
+          </h2>
+        </div>
+      ))}
+    </section>
+
+    {modalIndex !== null && (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.45)',
+          zIndex: 9999,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          userSelect: 'none',
         }}
-        aria-label="Agregar nuevo lugar"
+        onClick={() => setModalIndex(null)}
       >
-        +
-      </button>
-
-      <section className={styles.attractionsSection}>
-        {attractions.map((attraction, index) => (
-          <div
-            key={index}
-            className={styles.attractionCard}
-            style={{ cursor: 'pointer' }}
-          >
-            <a
-              href={attraction.mapLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <div className={styles.imageWrapper}>
-                {attraction.image && (
-                  <Image
-                    src={attraction.image}
-                   alt={attraction.name || 'Imagen del atractivo turístico'}
-                    className={styles.attractionImage}
-                    width={500}
-                    height={300}
-                  />
-                )}
-              </div>
-              <h2 className={styles.attractionName}>
-                {attraction.name}
-                <span
-                  style={{ marginLeft: 18, cursor: 'pointer', verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}
-                  title="Ver detalles"
-                  onClick={e => {
-                    e.preventDefault();
-                    setModalIndex(index);
-                  }}
-                >
-                  {/* SVG ojito */}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="44" height="28" viewBox="0 0 44 28" fill="none">
-                    <path d="M22 5C11.79 5 4.01 12.11 2 14c2.01 1.89 9.79 9 20 9s17.99-7.11 20-9c-2.01-1.89-9.79-9-20-9zM22 21c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#222"/>
-                  </svg>
-                </span>
-              </h2>
-            </a>
-          </div>
-        ))}
-      </section>
-
-      {modalIndex !== null && (
         <div
           style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.45)',
-            zIndex: 9999,
+            background: 'white',
+            borderRadius: '24px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            padding: '32px',
+            minWidth: '50vw',
+            maxWidth: '90vw',
+            width: '700px',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            position: 'relative',
           }}
-          onClick={() => setModalIndex(null)}
+          onClick={e => e.stopPropagation()}
         >
+          <button
+            style={{
+              position: 'absolute',
+              top: 18,
+              right: 18,
+              background: '#e53e3e',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: 36,
+              height: 36,
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              zIndex: 2,
+            }}
+            onClick={() => setModalIndex(null)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+
+          {attractions[modalIndex].image_url && (
+            <Image
+              src={attractions[modalIndex].image_url}
+              alt={attractions[modalIndex].name}
+              width={600}
+              height={350}
+              style={{ borderRadius: '15px', marginBottom: '20px', objectFit: 'cover' }}
+            />
+          )}
+
+          <h2 style={{ fontSize: '2rem', marginBottom: '18px', color: '#222' }}>
+            {attractions[modalIndex].name}
+          </h2>
           <div
             style={{
-              background: 'white',
-              borderRadius: '24px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-              padding: '32px',
-              minWidth: '50vw',
-              maxWidth: '90vw',
-              width: '700px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              position: 'relative',
+              fontSize: '1.15rem',
+              color: '#333',
+              textAlign: 'center',
+              maxHeight: '220px',
+              overflowY: 'auto',
+              marginBottom: '20px',
             }}
-            onClick={e => e.stopPropagation()}
           >
-            <button
-              style={{
-                position: 'absolute',
-                top: 18,
-                right: 18,
-                background: '#e53e3e',
-                color: 'white',
-                border: 'none',
-                borderRadius: '50%',
-                width: 36,
-                height: 36,
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                zIndex: 2,
-              }}
-              onClick={() => setModalIndex(null)}
-              aria-label="Cerrar"
-            >
-              ×
-            </button>
-            <h2 style={{ fontSize: '2rem', marginBottom: '18px', color: '#222' }}>{attractions[modalIndex].name}</h2>
-            <div style={{ fontSize: '1.15rem', color: '#333', textAlign: 'center', maxHeight: '220px', overflowY: 'auto' }}>
-              {attractions[modalIndex].description}
-            </div>
+            {attractions[modalIndex].description}
           </div>
-        </div>
-      )}
 
-      {showNewForm && (
-        <NewAttractionForm
-          onClose={() => setShowNewForm(false)}
-          onSave={(newAttraction) => {
-            setAttractions(prev => [...prev, newAttraction]);
-            setShowNewForm(false);
-          }}
-        />
-      )}
-    </main>
-  );
+          {/* Botón para abrir Google Maps */}
+          {attractions[modalIndex].map_link && (
+            <a
+              href={attractions[modalIndex].map_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                backgroundColor: '#3182ce',
+                color: 'white',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+              aria-label={`Abrir Google Maps para ${attractions[modalIndex].name}`}
+            >
+              {/* Icono de mapa simple (SVG) */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                fill="white"
+              >
+                <path d="M20.5 3l-5.38 1.69-4.12-1.72L4.5 5v15l5.38-1.69 4.12 1.72 6.5-2V3zM10 17.5l-4-1.25v-11l4 1.66v10.59zM16 19.27l-4-1.59V7.18l4 1.67v10.42z" />
+              </svg>
+              Abrir en Google Maps
+            </a>
+          )}
+        </div>
+      </div>
+    )}
+
+    {showNewForm && (
+      <NewAttractionForm
+        onClose={() => setShowNewForm(false)}
+        onSave={newAttraction => {
+          setAttractions(prev => [...prev, newAttraction]);
+          setShowNewForm(false);
+        }}
+      />
+    )}
+  </main>
+);
 }

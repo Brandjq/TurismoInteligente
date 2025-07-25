@@ -1,29 +1,47 @@
-// src/app/api/guardar-attractions/route.js
+import prisma from '../../../../lib/prisma';
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import { mkdirSync, existsSync } from 'fs';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+export const dynamic = 'force-dynamic';
 
-export async function POST(req) {
-  const data = await req.json();
-
+export async function POST(request) {
   try {
-    const client = await pool.connect();
+    const data = await request.formData();
 
-    await client.query(
-      `INSERT INTO attractions (name, description, map_link)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (name) DO NOTHING`,
-      [data.name, data.description, data.mapLink || null]
-    );
+    const name = data.get('name');
+    const description = data.get('description');
+    const map_link = data.get('mapLink'); // debe mapear a map_link
+    const imageFile = data.get('image');
 
-    client.release();
+    if (!imageFile || typeof imageFile === 'string') {
+      return NextResponse.json({ error: 'Imagen inválida' }, { status: 400 });
+    }
 
-    return NextResponse.json({ message: 'Registro insertado exitosamente' });
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
+
+    const filename = `${Date.now()}-${imageFile.name}`;
+    const filepath = path.join(uploadsDir, filename);
+
+    await writeFile(filepath, buffer);
+
+    const nuevaAtraccion = await prisma.attractions.create({
+      data: {
+        name,
+        description,
+        map_link,    // usa map_link aquí, no mapLink ni map_Link
+        image_url: `/uploads/${filename}`,  // igual image_url
+      },
+    });
+
+    return NextResponse.json(nuevaAtraccion, { status: 201 });
   } catch (error) {
-    console.error('Error al insertar en BD:', error);
-    return NextResponse.json({ error: 'Error al insertar en la BD' }, { status: 500 });
+    console.error('Error al guardar:', error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

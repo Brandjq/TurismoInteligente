@@ -2,92 +2,219 @@
 import { useState } from 'react';
 
 export default function NewAttractionForm({ onClose, onSave }) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [mapLink, setMapLink] = useState('');
-  const [imagePreview, setImagePreview] = useState(null);
+  const [form, setForm] = useState({
+    name: '',
+    description: '',
+    mapLink: '',
+    image: null,
+  });
 
-  const handleImageChange = (e) => {
+  const [message, setMessage] = useState(null); // Para mensajes de éxito/error
+  const [loading, setLoading] = useState(false);
+
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result); // guardamos el base64 para mostrar la imagen localmente
-    };
-    reader.readAsDataURL(file);
+    setForm({ ...form, image: file });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.image) {
+      alert('Por favor selecciona una imagen.');
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('description', form.description);
+    formData.append('mapLink', form.mapLink);
+    formData.append('image', form.image);
+
     try {
       const res = await fetch('/api/guardar-attractions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, description, mapLink }),
+        body: formData,
       });
 
       if (res.ok) {
-        const result = await res.json();
-        // pasamos la imagen en base64 solo a nivel de frontend
-        onSave({ ...result, image: imagePreview });
+        const data = await res.json();
+        setMessage('¡Atractivo guardado con éxito!');
+        onSave(data);
+        setTimeout(() => {
+          setMessage(null);
+          onClose();
+        }, 2000);
       } else {
-        console.error('Error al guardar en la BD');
+        setMessage('Error al guardar el atractivo.');
       }
-    } catch (error) {
-      console.error('Error en la solicitud:', error);
+    } catch {
+      setMessage('Error de conexión.');
+    }
+    setLoading(false);
+  };
+
+  const handleCancel = () => {
+    if (window.confirm('¿Seguro que quieres cancelar? Los datos no guardados se perderán.')) {
+      onClose();
     }
   };
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center',
-      zIndex: 9999
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        background: 'white', padding: '2rem', borderRadius: '12px',
-        display: 'flex', flexDirection: 'column', gap: '1rem', width: '400px'
-      }}>
-        <h2>Nuevo Atractivo</h2>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Descripción"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Enlace a Google Maps"
-          value={mapLink}
-          onChange={(e) => setMapLink(e.target.value)}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-        />
-        {imagePreview && (
-          <img src={imagePreview} alt="Previsualización" style={{ maxHeight: '150px', borderRadius: '8px' }} />
-        )}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <button type="submit" style={{ background: '#3182ce', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '6px' }}>
-            Guardar
-          </button>
-          <button type="button" onClick={onClose} style={{ padding: '0.5rem 1rem' }}>
-            Cancelar
-          </button>
-        </div>
-      </form>
-    </div>
+    <>
+      {/* Fondo oscuro semi-transparente */}
+      <div
+        onClick={handleCancel}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          zIndex: 999,
+        }}
+      />
+      {/* Modal */}
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'white',
+          borderRadius: '12px',
+          padding: '30px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+          width: '90%',
+          maxWidth: '400px',
+          zIndex: 1000,
+          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        }}
+      >
+        <h2 style={{ marginBottom: '15px', textAlign: 'center' }}>Nuevo Atractivo</h2>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+            style={{
+              padding: '10px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              fontSize: '1rem',
+            }}
+          />
+          <textarea
+            placeholder="Descripción"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            required
+            rows={4}
+            style={{
+              padding: '10px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              fontSize: '1rem',
+              resize: 'vertical',
+            }}
+          />
+          <input
+            type="url"
+            placeholder="Enlace a Google Maps"
+            value={form.mapLink}
+            onChange={(e) => setForm({ ...form, mapLink: e.target.value })}
+            required
+            style={{
+              padding: '10px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              fontSize: '1rem',
+            }}
+          />
+
+          {/* Input file personalizado */}
+          <label
+            htmlFor="imageUpload"
+            style={{
+              display: 'inline-block',
+              padding: '10px 15px',
+              backgroundColor: '#0070f3',
+              color: 'white',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              textAlign: 'center',
+              fontWeight: 'bold',
+              userSelect: 'none',
+            }}
+          >
+            {form.image ? `Imagen: ${form.image.name}` : 'Seleccionar Imagen'}
+          </label>
+          <input
+            id="imageUpload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: 'none' }}
+            required={!form.image}
+          />
+
+          {/* Mensaje de éxito o error */}
+          {message && (
+            <p
+              style={{
+                textAlign: 'center',
+                color: message.includes('éxito') ? 'green' : 'red',
+                fontWeight: 'bold',
+                marginTop: '5px',
+              }}
+            >
+              {message}
+            </p>
+          )}
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                backgroundColor: loading ? '#a5d6a7' : '#4CAF50',
+                color: 'white',
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold',
+                flex: 1,
+                marginRight: '10px',
+                transition: 'background-color 0.3s ease',
+              }}
+              onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#45a049')}
+              onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#4CAF50')}
+            >
+              {loading ? 'Guardando...' : 'Guardar'}
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              style={{
+                backgroundColor: '#f44336',
+                color: 'white',
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                flex: 1,
+                transition: 'background-color 0.3s ease',
+              }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = '#da190b')}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = '#f44336')}
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }

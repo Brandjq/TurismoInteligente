@@ -226,7 +226,7 @@ export default function HistoriaSolola() {
           </div>
           <div style={{flex:'2 1 420px',minWidth:320}}>
             <p>
-              El departamento de Sololá, ubicado en la región occidental de Guatemala, es uno de los más emblemáticos por su riqueza cultural, histórica y natural. Su nombre proviene del vocablo kaqchikel "tz'oloj ya'", que significa "agua de sauce". Sololá es conocido por su impresionante Lago de Atitlán, rodeado de volcanes y pueblos mayas que conservan tradiciones ancestrales.
+              El departamento de Sololá, ubicado en la región occidental de Guatemala, es uno de los más emblemáticos por su riqueza cultural, histórica y natural. Su nombre proviene del vocablo kaqchikel &quot;tz&apos;oloj ya&apos;&quot;, que significa &quot;agua de sauce&quot;. Sololá es conocido por su impresionante Lago de Atitlán, rodeado de volcanes y pueblos mayas que conservan tradiciones ancestrales.
             </p>
           </div>
         </div>
@@ -234,7 +234,7 @@ export default function HistoriaSolola() {
         <div style={{display:'flex',gap:'2.2rem',flexWrap:'wrap',alignItems:'center',marginBottom:'2.2rem'}}>
           <div style={{flex:'2 1 420px',minWidth:320}}>
             <p>
-              Antes de la llegada de los españoles, la región de Sololá estuvo habitada principalmente por los pueblos mayas Kaqchikel, Tz'utujil y K'iche'. Estos grupos establecieron ciudades-estado alrededor del lago y desarrollaron una economía basada en la agricultura, la pesca y el comercio. El lago era considerado sagrado y centro de numerosas leyendas y rituales.
+              Antes de la llegada de los españoles, la región de Sololá estuvo habitada principalmente por los pueblos mayas Kaqchikel, Tz&apos;utujil y K&apos;iche&apos;. Estos grupos establecieron ciudades-estado alrededor del lago y desarrollaron una economía basada en la agricultura, la pesca y el comercio. El lago era considerado sagrado y centro de numerosas leyendas y rituales.
             </p>
           </div>
           <div style={{flex:'1 1 320px',minWidth:260,maxWidth:400}}>

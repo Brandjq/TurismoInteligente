@@ -23,6 +23,24 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Botón regresar flotante global, solo icono */}
+        <div style={{ position: 'fixed', top: 24, left: 24, zIndex: 5000 }}>
+          <Link href="/" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 48,
+            height: 48,
+            background: 'linear-gradient(90deg, #3182ce 60%, #38b2ac 100%)',
+            borderRadius: '50%',
+            boxShadow: '0 2px 12px #3182ce22',
+            textDecoration: 'none',
+            border: 'none',
+            transition: 'background 0.2s',
+          }} aria-label="Regresar">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          </Link>
+        </div>
         <header className="navbar">
           <nav className="menu-bar">
             <ul className="menu">
@@ -38,13 +56,14 @@ export default function RootLayout({ children }) {
               <li>
                 <Link href="/rutas">Generacion rutas</Link>
               </li>
+              <li>
+                <Link href="/hoteles">Hoteles</Link>
+              </li>
             </ul>
           </nav>
         </header>
         <main>{children}</main>
-        <footer className="back-button">
-          <Link href="/">← Regresar</Link>
-        </footer>
+        {/* Eliminado el botón regresar del footer */}
       </body>
     </html>
   );

@@ -32,3 +32,12 @@ model attractions {
   map_link    String?
   image_url   String?
 }
+model Hotel {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  direccion String
+  descripcion String
+  precio    String
+  url       String
+  imagen    String
+}

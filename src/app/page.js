@@ -128,19 +128,49 @@ export default function Home() {
       <div className="banner-animado">
         ¡Bienvenido a Sololá! Vive la magia del Lago de Atitlán, su cultura y naturaleza maya.
       </div>
-      <div className="clima-animado">
-        <svg className="icono" viewBox="0 0 64 64" fill="none">
-          <circle cx="32" cy="32" r="20" fill="#ffe082"/>
-          <ellipse cx="32" cy="48" rx="18" ry="7" fill="#b3e5fc"/>
-          <ellipse cx="44" cy="44" rx="7" ry="3" fill="#b2ebf2"/>
-          <ellipse cx="24" cy="46" rx="6" ry="2.5" fill="#b2ebf2"/>
-          <ellipse cx="38" cy="40" rx="4" ry="1.5" fill="#fffde7"/>
-        </svg>
-        <div>
-          <div className="lugar">Clima actual en Sololá</div>
-          <span className="temp">21°C</span>
-          <span className="desc">&nbsp;Soleado con nubes | Pronóstico: 21-24°C, brisa del lago</span>
+      {/* Eliminado clima duplicado, solo queda el bloque flex con clima e historia */}
+      {/* Clima y botón historia juntos en flex */}
+      <div style={{ display: 'flex', gap: '2.2rem', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'wrap', marginBottom: '2.2rem' }}>
+        <div className="clima-animado">
+          <svg className="icono" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="20" fill="#ffe082"/>
+            <ellipse cx="32" cy="48" rx="18" ry="7" fill="#b3e5fc"/>
+            <ellipse cx="44" cy="44" rx="7" ry="3" fill="#b2ebf2"/>
+            <ellipse cx="24" cy="46" rx="6" ry="2.5" fill="#b2ebf2"/>
+            <ellipse cx="38" cy="40" rx="4" ry="1.5" fill="#fffde7"/>
+          </svg>
+          <div>
+            <div className="lugar">Clima actual en Sololá</div>
+            <span className="temp">21°C</span>
+            <span className="desc">&nbsp;Soleado con nubes | Pronóstico: 21-24°C, brisa del lago</span>
+          </div>
         </div>
+        <a href="/historia" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: 220,
+          maxWidth: 320,
+          background: 'linear-gradient(120deg, #fffde7 60%, #e1f5fe 100%)',
+          borderRadius: 22,
+          boxShadow: '0 4px 24px #b2ebf233',
+          padding: '2.2rem 1.5rem',
+          fontWeight: 700,
+          fontSize: '1.25rem',
+          color: '#234e70',
+          textDecoration: 'none',
+          border: '2px solid #4dd0e1',
+          transition: 'transform 0.18s, box-shadow 0.18s',
+          cursor: 'pointer',
+          textAlign: 'center',
+        }}
+        className="historia-float"
+        >
+          <span style={{ fontSize: 60, marginBottom: 18, display: 'block' }}>📖</span>
+          ¿Quieres conocer la historia de Sololá?
+          <span style={{ fontSize: 19, marginTop: 10, color: '#1976d2', fontWeight: 600, letterSpacing: 0.5 }}>Click acá</span>
+        </a>
       </div>
       <div className="eventos-tips">
         <div style={{display:'flex',alignItems:'center'}}>
@@ -301,9 +331,14 @@ export default function Home() {
             color: #34495e;
             text-align: center;
           }
-          @media (max-width: 700px) {
-            .modulo-turismo {
-              padding: 1.2rem 0.5rem;
+        @media (max-width: 900px) {
+          .eventos-tips { flex-direction: column; gap: 1.2rem; }
+          .historia-float { position: static !important; margin: 1.5rem auto 0 auto !important; display: flex; }
+        }
+        .historia-float:hover {
+          transform: scale(1.04);
+          box-shadow: 0 8px 32px #4dd0e155;
+        }
               font-size: 1.08rem;
             }
             .modulo-turismo h3 {

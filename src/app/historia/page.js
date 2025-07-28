@@ -280,7 +280,7 @@ export default function HistoriaSolola() {
         </div>
         <h3>Datos Culturales y Sociales</h3>
         <ul>
-          <li><b>Idiomas:</b> Kaqchikel, Tz'utujil, K'iche' y español.</li>
+          <li><b>Idiomas:</b> Kaqchikel, Tz&apos;utujil, K&apos;iche&apos; y español.</li>
           <li><b>Vestimenta:</b> Los trajes típicos varían por municipio y son reconocidos por sus colores y bordados.</li>
           <li><b>Fiestas:</b> Cada municipio celebra su feria patronal con música, danzas, procesiones y gastronomía típica.</li>
           <li><b>Artesanías:</b> Textiles, cerámica, tallados en madera y máscaras tradicionales.</li>
@@ -323,7 +323,7 @@ export default function HistoriaSolola() {
           </div>
           <div style={{flex:'2 1 420px',minWidth:320}}>
             <p>
-              Entre las leyendas más conocidas está la del "Rostro Maya", la historia de Maximón y relatos sobre el origen del lago. Personajes históricos incluyen líderes indígenas y promotores de la cultura local.
+              Entre las leyendas más conocidas está la del &quot;Rostro Maya&quot;, la historia de Maximón y relatos sobre el origen del lago. Personajes históricos incluyen líderes indígenas y promotores de la cultura local.
             </p>
           </div>
         </div>

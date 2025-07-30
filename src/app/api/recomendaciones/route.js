@@ -7,6 +7,7 @@ export async function GET(request) {
   const tipo = searchParams.get("tipo") || "restaurant";
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
+  
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "API key no configurada" }), { status: 500 });
   }

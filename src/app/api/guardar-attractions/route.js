@@ -1,8 +1,6 @@
 import prisma from '../../../../lib/prisma';
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
-import { mkdirSync, existsSync } from 'fs';
+import cloudinary from '../../../../lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,30 +10,35 @@ export async function POST(request) {
 
     const name = data.get('name');
     const description = data.get('description');
-    const map_link = data.get('mapLink'); // debe mapear a map_link
+    const map_link = data.get('mapLink');
     const imageFile = data.get('image');
 
-    if (!imageFile || typeof imageFile === 'string') {
-      return NextResponse.json({ error: 'Imagen inválida' }, { status: 400 });
+    let imageUrl = '';
+    if (imageFile && typeof imageFile !== 'string') {
+      const arrayBuffer = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      // Subir a Cloudinary
+      const uploadPromise = () =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'atractivos' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(buffer);
+        });
+      const uploadResult = await uploadPromise();
+      imageUrl = uploadResult.secure_url;
     }
-
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadsDir)) mkdirSync(uploadsDir, { recursive: true });
-
-    const filename = `${Date.now()}-${imageFile.name}`;
-    const filepath = path.join(uploadsDir, filename);
-
-    await writeFile(filepath, buffer);
 
     const nuevaAtraccion = await prisma.attractions.create({
       data: {
         name,
         description,
-        map_link,    // usa map_link aquí, no mapLink ni map_Link
-        image_url: `/uploads/${filename}`,  // igual image_url
+        map_link,
+        image_url: imageUrl,
       },
     });
 

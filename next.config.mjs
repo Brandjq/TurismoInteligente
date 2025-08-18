@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'maps.googleapis.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
     ],
   },
 };

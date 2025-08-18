@@ -201,9 +201,9 @@ export default function Recomendaciones() {
                   maxWidth: "900px",
                   margin: "0 auto"
                 }}>
-                  {lugar.foto && (
+                  {(lugar.image_url || lugar.foto) && (
                     <img
-                      src={lugar.foto}
+                      src={lugar.image_url || lugar.foto}
                       alt={lugar.nombre}
                       width={420}
                       height={260}

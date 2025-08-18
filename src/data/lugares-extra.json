@@ -1,0 +1,38 @@
+[
+  {
+    "nombre": "Museo Lacustre de Atitlán",
+    "direccion": "Panajachel, Sololá",
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Museo_Lacustre.jpg",
+    "url": "https://goo.gl/maps/abc123",
+    "tipo": "museum"
+  },
+
+  {
+    "nombre": "Centro de Turismo Atitlán",
+    "direccion": "Panajachel, Sololá",
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Centro_Turismo_Atitlan.jpg",
+    "url": "https://goo.gl/maps/turismo1",
+    "tipo": "turismo"
+  },
+  {
+    "nombre": "Mirador Vista al Lago, destino colorido en Sololá",
+    "direccion": "Sololá",
+    "foto": "",
+    "url": "https://www.guatemala.com/guias/pasatiempos/artesanias-el-mirador-vista-al-lago-en-guatemala",
+    "tipo": "turismo"
+  },
+  {
+    "nombre": "Mirador Las Nubes Lago de Atitlán, un espacio con vistas en Sololá",
+    "direccion": "Sololá",
+    "foto": "",
+    "url": "https://www.guatemala.com/guias/pasatiempos/mirador-las-nubes-lago-de-atitlan-en-solola",
+    "tipo": "turismo"
+  },
+  {
+    "nombre": "El Jaibal Atitlán, un destino natural y al aire libre en Sololá",
+    "direccion": "Sololá",
+    "foto": "",
+    "url": "https://www.guatemala.com/guias/pasatiempos/el-jaibal-atitlan-un-destino-natural-y-al-aire-libre-en-solola",
+    "tipo": "turismo"
+  }
+]

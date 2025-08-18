@@ -1,0 +1,37 @@
+[
+  {
+    "nombre": "Restaurante El Mirador",
+    "direccion": "Panajachel, Sololá",
+    "tipo": "restaurant",
+    "foto": null,
+    "url": "https://goo.gl/maps/ejemplo1"
+  },
+  {
+    "nombre": "Bar Atitlán",
+    "direccion": "Panajachel, Sololá",
+    "tipo": "bar",
+    "foto": null,
+    "url": "https://goo.gl/maps/ejemplo2"
+  },
+  {
+    "nombre": "Hotel Lago Azul",
+    "direccion": "San Pedro La Laguna, Sololá",
+    "tipo": "lodging",
+    "foto": null,
+    "url": "https://goo.gl/maps/ejemplo3"
+  },
+  {
+    "nombre": "Parque Central Sololá",
+    "direccion": "Sololá, Sololá",
+    "tipo": "park",
+    "foto": null,
+    "url": "https://goo.gl/maps/ejemplo4"
+  },
+  {
+    "nombre": "Galería de Arte Maya",
+    "direccion": "San Juan La Laguna, Sololá",
+    "tipo": "art_gallery",
+    "foto": null,
+    "url": "https://goo.gl/maps/ejemplo5"
+  }
+]

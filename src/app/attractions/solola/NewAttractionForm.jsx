@@ -40,7 +40,13 @@ export default function NewAttractionForm({ onClose, onSave }) {
       if (res.ok) {
         const data = await res.json();
         setMessage('¡Atractivo guardado con éxito!');
-        onSave(data);
+        // Normalizar el objeto para el frontend
+        onSave({
+          name: data.name,
+          description: data.description,
+          image_url: data.image_url,
+          map_link: data.map_link,
+        });
         setTimeout(() => {
           setMessage(null);
           onClose();

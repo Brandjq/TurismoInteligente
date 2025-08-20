@@ -156,7 +156,7 @@ export default function Home() {
         justifyContent: 'center',
       }}>
         <video
-          src="/lago.mp4"
+          src="https://res.cloudinary.com/dy0agrote/video/upload/v1755708913/lago_dec6yw.mp4"
           autoPlay
           loop
           muted

@@ -370,12 +370,54 @@ export default function Home() {
             <li>Municipios: 19</li>
           </ul>
         </div>
-        <div className="modulo-turismo" style={{ background: 'rgba(233,30,99,0.10)' }}>
-          <Image src="/rostro.jpg" alt="Historia y leyendas" width={540} height={260} style={{ borderRadius: '18px', marginBottom: '1.2rem', objectFit: 'cover', width: '100%', maxWidth: '540px' }} />
-          <h3 style={{ color: '#e91e63' }}>Historias y Leyendas</h3>
-          <p>
-            El &quot;Rostro Maya&quot; es una formación montañosa que, según la leyenda local, protege el lago y sus pueblos. Sololá está lleno de historias ancestrales y tradiciones vivas.
-          </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', width: '100%', justifyContent: 'center' }}>
+          <div className="modulo-turismo" style={{ background: 'rgba(233,30,99,0.10)', minWidth: '320px', maxWidth: '540px', flex: '1 1 320px' }}>
+            <Image src="/rostro.jpg" alt="Historia y leyendas" width={540} height={260} style={{ borderRadius: '18px', marginBottom: '1.2rem', objectFit: 'cover', width: '100%', maxWidth: '540px' }} />
+            <h3 style={{ color: '#e91e63' }}>Historias y Leyendas</h3>
+            <p>
+              El &quot;Rostro Maya&quot; es una formación montañosa que, según la leyenda local, protege el lago y sus pueblos. Sololá está lleno de historias ancestrales y tradiciones vivas.
+            </p>
+          </div>
+          <div className="modulo-turismo" style={{ background: 'rgba(52,152,219,0.10)', minWidth: '320px', maxWidth: '540px', flex: '1 1 320px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <h3 style={{ color: '#1976d2', marginBottom: '1.1rem' }}>Cómo llegar</h3>
+            <p style={{ fontSize: '1.15rem', color: '#34495e', textAlign: 'center', marginBottom: '1.2rem' }}>
+              Sololá está ubicada en el altiplano occidental de Guatemala, a orillas del Lago de Atitlán. Puedes llegar en bus desde la Ciudad de Guatemala, en vehículo propio o contratando un tour. El acceso principal es por la carretera Interamericana CA-1.
+            </p>
+            <iframe
+              src="https://www.google.com/maps?q=Sololá,+Guatemala&output=embed"
+              width="100%"
+              height="220"
+              style={{ border: 0, borderRadius: '14px', boxShadow: '0 2px 18px #1976d233', marginBottom: '1rem', maxWidth: '480px' }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Mapa de Sololá"
+            />
+            <a
+              href="https://www.google.com/maps/place/Sololá,+Guatemala"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 18px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                userSelect: 'none',
+                marginTop: '8px',
+                fontSize: '1.08rem',
+              }}
+              aria-label="Abrir Google Maps para Sololá"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 0 24 24" width="22" fill="white"><path d="M20.5 3l-5.38 1.69-4.12-1.72L4.5 5v15l5.38-1.69 4.12 1.72 6.5-2V3zM10 17.5l-4-1.25v-11l4 1.66v10.59zM16 19.27l-4-1.59V7.18l4 1.67v10.42z" /></svg>
+              Ver en Google Maps
+            </a>
+          </div>
         </div>
       </section>
       <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>

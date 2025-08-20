@@ -29,7 +29,8 @@ export default function HistoriaSolola() {
       padding: '2.5rem 1.5rem',
       background: 'linear-gradient(135deg, #fffde7 0%, #e0f7fa 100%)',
       borderRadius: '28px',
-      boxShadow: '0 4px 32px rgba(26,188,156,0.10)'
+      boxShadow: '0 4px 32px rgba(26,188,156,0.10)',
+      width: '100%'
     }}>
       <style>{`
         .municipios-lista ul {
@@ -53,6 +54,7 @@ export default function HistoriaSolola() {
           font-size: 1.1em;
           letter-spacing: 0.5px;
         }
+        .carrusel-solola {
           width: 100%;
           max-width: 1000px;
           aspect-ratio: 16/9;
@@ -151,6 +153,85 @@ export default function HistoriaSolola() {
           margin-top: 2rem;
           margin-bottom: 0.8rem;
         }
+        /* RESPONSIVE STYLES */
+        @media (max-width: 900px) {
+          main {
+            padding: 1.2rem 0.5rem !important;
+            border-radius: 18px !important;
+          }
+          .carrusel-solola {
+            max-width: 100vw;
+            border-radius: 18px;
+            aspect-ratio: 16/10;
+          }
+          .municipios-lista {
+            padding: 1.2rem 0.7rem;
+            border-radius: 14px;
+            max-width: 98vw;
+          }
+          .historia-solola {
+            padding: 1.2rem 0.7rem;
+            border-radius: 14px;
+            max-width: 98vw;
+            font-size: 1rem;
+          }
+          .historia-solola h2 {
+            font-size: 1.4rem;
+          }
+          .historia-solola h3 {
+            font-size: 1.1rem;
+          }
+        }
+        @media (max-width: 600px) {
+          main {
+            padding: 0.5rem 0.1rem !important;
+            border-radius: 10px !important;
+          }
+          .carrusel-solola {
+            max-width: 100vw;
+            border-radius: 10px;
+            aspect-ratio: 16/12;
+          }
+          .municipios-lista {
+            padding: 0.7rem 0.2rem;
+            border-radius: 8px;
+            max-width: 99vw;
+          }
+          .historia-solola {
+            padding: 0.7rem 0.2rem;
+            border-radius: 8px;
+            max-width: 99vw;
+            font-size: 0.95rem;
+          }
+          .historia-solola h2 {
+            font-size: 1.1rem;
+          }
+          .historia-solola h3 {
+            font-size: 0.95rem;
+          }
+          .municipios-lista ul {
+            font-size: 1rem;
+          }
+        }
+        /* Flex containers responsive */
+        @media (max-width: 900px) {
+          .historia-solola > div,
+          .historia-solola > section,
+          .historia-solola > .flex {
+            flex-direction: column !important;
+            gap: 1.2rem !important;
+            align-items: stretch !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .historia-solola > div,
+          .historia-solola > section,
+          .historia-solola > .flex {
+            flex-direction: column !important;
+            gap: 0.7rem !important;
+            align-items: stretch !important;
+          }
+        }
       `}</style>
       <h1 style={{
         fontSize: '3.2rem',
@@ -158,7 +239,10 @@ export default function HistoriaSolola() {
         textAlign: 'center',
         color: '#1a237e',
         marginBottom: '2.2rem',
-        textShadow: '2px 2px 12px #b2ebf2'
+        textShadow: '2px 2px 12px #b2ebf2',
+        wordBreak: 'break-word',
+        lineHeight: '1.1',
+        maxWidth: '98vw'
       }}>
         Historia y Datos del Departamento de Sololá
       </h1>
@@ -168,8 +252,13 @@ export default function HistoriaSolola() {
           alt="Lugar turístico de Sololá"
           width={1280}
           height={720}
-          style={{ objectFit: 'contain', width: '100%', height: '100%' }}
-          priority
+          style={{
+            objectFit: 'contain',
+            width: '100%',
+            height: '100%',
+            maxWidth: '100vw',
+            maxHeight: '60vh'
+          }}
         />
         <div className="carrusel-indicadores">
           {sololaImages.map((_, idx) => (
@@ -311,20 +400,10 @@ export default function HistoriaSolola() {
             <p>
               La cocina de Sololá destaca por platillos como el pepián, pulique, caldo de gallina, tamales, pescado del lago y tortillas de maíz. El café de la región es reconocido por su calidad.
             </p>
+            <img src="/file.gif" alt="GIF gastronomía" className="gif-gastro" />
           </div>
           <div style={{flex:'1 1 320px',minWidth:260,maxWidth:400}}>
             <Image src="/pascual.jpg" alt="Gastronomía de Sololá" width={400} height={260} style={{borderRadius:18,objectFit:'cover',width:'100%'}} />
-          </div>
-        </div>
-        <h3>Personajes y Leyendas</h3>
-        <div style={{display:'flex',gap:'2.2rem',flexWrap:'wrap',alignItems:'center',marginBottom:'2.2rem'}}>
-          <div style={{flex:'1 1 320px',minWidth:260,maxWidth:400}}>
-            <Image src="/cerro.jpg" alt="Leyendas de Sololá" width={400} height={260} style={{borderRadius:18,objectFit:'cover',width:'100%'}} />
-          </div>
-          <div style={{flex:'2 1 420px',minWidth:320}}>
-            <p>
-              Entre las leyendas más conocidas está la del &quot;Rostro Maya&quot;, la historia de Maximón y relatos sobre el origen del lago. Personajes históricos incluyen líderes indígenas y promotores de la cultura local.
-            </p>
           </div>
         </div>
         <h3>Retos y Futuro</h3>

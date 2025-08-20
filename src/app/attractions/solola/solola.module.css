@@ -6,8 +6,9 @@
   background: linear-gradient(to bottom, #f0f4f8, #d9e2ec);
 }
 
+/* TITULO PRINCIPAL */
 .title {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
   text-align: center;
@@ -15,19 +16,24 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* TEXTO DESCRIPTIVO */
 .description {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 2rem;
   text-align: center;
   color: #34495e;
+  line-height: 1.6;
+  padding: 0 1rem;
 }
 
+/* SECCIÓN DE TARJETAS */
 .attractionsSection {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
+/* TARJETA */
 .attractionCard {
   position: relative;
   text-align: center;
@@ -35,13 +41,15 @@
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
 }
 
 .attractionCard:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+/* IMAGEN */
 .imageWrapper {
   position: relative;
   overflow: hidden;
@@ -65,19 +73,20 @@
   filter: brightness(1);
 }
 
-.description {
+/* DESCRIPCIÓN SUPERPUESTA */
+.overlayDescription {
   position: absolute;
-  top: 10%;
-  left: 10%;
-  right: 10%;
-  bottom: 10%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
   opacity: 0;
   transition: opacity 0.3s ease;
   text-align: center;
@@ -85,15 +94,57 @@
   overflow-y: auto;
 }
 
-.imageWrapper:hover .description {
+.imageWrapper:hover .overlayDescription {
   opacity: 1;
 }
 
+/* NOMBRE DE ATRACCIÓN */
 .attractionName {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: bold;
   margin-top: 1rem;
   color: #2c3e50;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+/* ==================== MEDIA QUERIES ==================== */
+
+/* TABLET */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .attractionName {
+    font-size: 1.2rem;
+  }
+}
+
+/* MÓVIL */
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
+  }
+
+  .overlayDescription {
+    font-size: 0.9rem;
+    padding: 1rem;
+  }
+
+  .attractionName {
+    font-size: 1rem;
+  }
 }

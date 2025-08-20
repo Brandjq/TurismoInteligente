@@ -22,6 +22,7 @@ export async function GET(request) {
   if (!filtrosValidos.includes(tipo)) {
     tipo = "restaurant";
   }
+    // Paginación
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
   if (!apiKey) {
@@ -120,7 +121,7 @@ export async function GET(request) {
 
   // Combinar ambos arrays
   const todosLugares = [...allLugares, ...lugaresExtra];
-  return new Response(JSON.stringify(todosLugares), {
-    headers: { "Content-Type": "application/json" }
-  });
+    return new Response(JSON.stringify(todosLugares), {
+      headers: { "Content-Type": "application/json" }
+    });
 }

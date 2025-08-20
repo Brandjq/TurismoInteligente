@@ -125,8 +125,52 @@ export default function Home() {
           .eventos-tips { flex-direction: column; gap: 1.2rem; }
         }
       `}</style>
-      <div className="banner-animado">
+      <div className="banner-animado" style={{
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto 1.2rem auto',
+        color: '#fff',
+        fontSize: '2.8rem',
+        fontWeight: 'bold',
+        textShadow: '2px 4px 18px #039be5',
+        textAlign: 'center',
+        background: 'linear-gradient(90deg, #1976d2 60%, #26c6da 100%)',
+        borderRadius: '32px',
+        padding: '1.2rem 2rem',
+        boxShadow: '0 2px 24px rgba(26,188,156,0.13)',
+      }}>
         ¡Bienvenido a Sololá! Vive la magia del Lago de Atitlán, su cultura y naturaleza maya.
+      </div>
+      <div style={{
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto 2.2rem auto',
+        borderRadius: '38px',
+        overflow: 'hidden',
+        boxShadow: '0 12px 64px rgba(26,188,156,0.22)',
+        background: '#000',
+        minHeight: '520px',
+        height: '520px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <video
+          src="/lago.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'block',
+            objectFit: 'cover',
+            filter: 'brightness(0.93) saturate(1.08)',
+            borderRadius: '38px',
+            transition: 'box-shadow 0.3s',
+          }}
+        />
       </div>
       {/* Eliminado clima duplicado, solo queda el bloque flex con clima e historia */}
       {/* Clima y botón historia juntos en flex */}
@@ -360,14 +404,28 @@ export default function Home() {
             La agricultura y la pesca artesanal son pilares de la economía local, con cultivos de maíz, café, frutas y verduras frescas. El Lago de Atitlán es fuente de vida y sustento para muchas familias.
           </p>
         </div>
-        <div className="modulo-turismo" style={{ background: 'rgba(52,152,219,0.13)' }}>
-          <Image src="/habitantes.jpg" alt="Habitantes de Sololá" width={540} height={260} style={{ borderRadius: '18px', marginBottom: '1.2rem', objectFit: 'cover', width: '100%', maxWidth: '540px' }} />
-          <h3 style={{ color: '#2980b9' }}>Datos de Sololá</h3>
-          <ul style={{ margin: 0, paddingLeft: '1.2rem', textAlign: 'left' }}>
-            <li>Habitantes: ~421,583 (2023)</li>
-            <li>Idiomas: Kaqchikel, Tz’utujil, K’iche’ y español</li>
-            <li>Altitud: 2,114 msnm</li>
-            <li>Municipios: 19</li>
+        <div className="modulo-turismo" style={{ background: 'rgba(52,152,219,0.13)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem 1.2rem' }}>
+          <Image src="/habitantes.jpg" alt="Habitantes de Sololá" width={320} height={140} style={{ borderRadius: '14px', marginBottom: '1rem', objectFit: 'cover', width: '100%', maxWidth: '320px', boxShadow: '0 2px 12px #1976d233' }} />
+          <h3 style={{ color: '#2980b9', marginBottom: '1.1rem', fontWeight: 'bold', fontSize: '1.45rem', letterSpacing: '0.5px' }}>Datos de Sololá</h3>
+          <ul style={{
+            margin: 0,
+            paddingLeft: '1.2rem',
+            textAlign: 'left',
+            fontSize: '1.18rem',
+            color: '#34495e',
+            fontWeight: 500,
+            lineHeight: 1.7,
+            letterSpacing: '0.2px',
+            maxWidth: '340px',
+            background: 'rgba(255,255,255,0.85)',
+            borderRadius: '10px',
+            boxShadow: '0 2px 8px #1976d222',
+            padding: '1.1rem 1.2rem',
+          }}>
+            <li><b style={{ color: '#1976d2' }}>Habitantes:</b> <span style={{ fontWeight: 700 }}>~421,583</span> <span style={{ color: '#888', fontSize: '0.98rem' }}>(2023)</span></li>
+            <li><b style={{ color: '#26c6da' }}>Idiomas:</b> Kaqchikel, Tz’utujil, K’iche’ y español</li>
+            <li><b style={{ color: '#f39c12' }}>Altitud:</b> 2,114 msnm</li>
+            <li><b style={{ color: '#43a047' }}>Municipios:</b> 19</li>
           </ul>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', width: '100%', justifyContent: 'center' }}>
@@ -383,16 +441,31 @@ export default function Home() {
             <p style={{ fontSize: '1.15rem', color: '#34495e', textAlign: 'center', marginBottom: '1.2rem' }}>
               Sololá está ubicada en el altiplano occidental de Guatemala, a orillas del Lago de Atitlán. Puedes llegar en bus desde la Ciudad de Guatemala, en vehículo propio o contratando un tour. El acceso principal es por la carretera Interamericana CA-1.
             </p>
-            <iframe
-              src="https://www.google.com/maps?q=Sololá,+Guatemala&output=embed"
-              width="100%"
-              height="220"
-              style={{ border: 0, borderRadius: '14px', boxShadow: '0 2px 18px #1976d233', marginBottom: '1rem', maxWidth: '480px' }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Mapa de Sololá"
-            />
+            <div style={{ position: 'relative', width: '100%', maxWidth: '480px', margin: '0 auto' }}>
+              <iframe
+                src="https://www.google.com/maps?q=Sololá,+Guatemala&output=embed"
+                width="100%"
+                height="220"
+                style={{ border: 0, borderRadius: '14px', boxShadow: '0 2px 18px #1976d233', marginBottom: '1rem', maxWidth: '480px' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Mapa de Sololá"
+              />
+              {/* Puntos de interés visuales */}
+              <div style={{ position: 'absolute', top: '38%', left: '54%', transform: 'translate(-50%, -50%)', zIndex: 2 }}>
+                <svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#e91e63"/><text x="16" y="22" textAnchor="middle" fontSize="16" fill="#fff">★</text></svg>
+                <div style={{ color: '#e91e63', fontWeight: 'bold', fontSize: '0.95rem', background: 'rgba(255,255,255,0.85)', borderRadius: '8px', padding: '2px 8px', marginTop: '2px', boxShadow: '0 2px 8px #e91e6322' }}>Mirador Atitlán</div>
+              </div>
+              <div style={{ position: 'absolute', top: '62%', left: '44%', transform: 'translate(-50%, -50%)', zIndex: 2 }}>
+                <svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#43a047"/><text x="16" y="22" textAnchor="middle" fontSize="16" fill="#fff">⛵</text></svg>
+                <div style={{ color: '#43a047', fontWeight: 'bold', fontSize: '0.95rem', background: 'rgba(255,255,255,0.85)', borderRadius: '8px', padding: '2px 8px', marginTop: '2px', boxShadow: '0 2px 8px #43a04722' }}>Embarcadero</div>
+              </div>
+              <div style={{ position: 'absolute', top: '50%', left: '70%', transform: 'translate(-50%, -50%)', zIndex: 2 }}>
+                <svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#1976d2"/><text x="16" y="22" textAnchor="middle" fontSize="16" fill="#fff">🏨</text></svg>
+                <div style={{ color: '#1976d2', fontWeight: 'bold', fontSize: '0.95rem', background: 'rgba(255,255,255,0.85)', borderRadius: '8px', padding: '2px 8px', marginTop: '2px', boxShadow: '0 2px 8px #1976d222' }}>Hotel Atitlán</div>
+              </div>
+            </div>
             <a
               href="https://www.google.com/maps/place/Sololá,+Guatemala"
               target="_blank"

@@ -17,3 +17,16 @@ export async function GET() {
     return NextResponse.json({ error: 'Error fetching attractions' }, { status: 500 });
   }
 }
+export async function DELETE(req) {
+  try {
+    const { id } = await req.json();
+    if (!id) return NextResponse.json({ error: 'Falta el id' }, { status: 400 });
+    const client = await pool.connect();
+    await client.query('DELETE FROM attractions WHERE id = $1', [id]);
+    client.release();
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting attraction:', err);
+    return NextResponse.json({ error: 'Error deleting attraction' }, { status: 500 });
+  }
+}

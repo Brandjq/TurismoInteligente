@@ -7,6 +7,7 @@ export default function AddHotelButton() {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
   function handleChange(e) {
     const { name, value, files } = e.target;
@@ -38,10 +39,7 @@ export default function AddHotelButton() {
   }
 
   function handleCancel() {
-    if (window.confirm('¿Estás seguro de cancelar el registro?')) {
-      setShow(false);
-      setPreview(null);
-    }
+    setConfirmCancel(true);
   }
 
   return (
@@ -68,21 +66,36 @@ export default function AddHotelButton() {
         +
       </button>
       {show && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0008', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
-          <form onSubmit={handleSubmit} style={{ background: '#fff', padding: 32, borderRadius: 12, minWidth: 320, maxWidth: 400, boxShadow: '0 2px 16px #0003', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <h2>Agregar Hotel</h2>
-            <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} required />
-            <input name="direccion" placeholder="Dirección" value={form.direccion} onChange={handleChange} required />
-            <input name="descripcion" placeholder="Descripción" value={form.descripcion} onChange={handleChange} required />
-            <input name="precio" placeholder="Precio" value={form.precio} onChange={handleChange} required />
-            <input name="url" placeholder="Sitio web" value={form.url} onChange={handleChange} required />
-            <input name="imagen" type="file" accept="image/*" onChange={handleChange} required />
-            {preview && <img src={preview} alt="preview" style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8 }} />}
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <button type="submit" disabled={loading} style={{ flex: 1, background: '#3182ce', color: '#fff', border: 'none', borderRadius: 6, padding: 10, fontWeight: 600, cursor: 'pointer' }}>{loading ? 'Guardando...' : 'Guardar'}</button>
-              <button type="button" onClick={handleCancel} style={{ flex: 1, background: '#eee', color: '#333', border: 'none', borderRadius: 6, padding: 10, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 }}>
+          <form onSubmit={handleSubmit} style={{ background: 'linear-gradient(120deg, #e0e7ff 0%, #f0fff4 100%)', padding: 38, borderRadius: 18, minWidth: 340, maxWidth: 440, boxShadow: '0 8px 32px #0002', display: 'flex', flexDirection: 'column', gap: 18, position: 'relative', fontFamily: 'Segoe UI, Poppins, sans-serif' }}>
+            <h2 style={{ textAlign: 'center', fontWeight: 800, fontSize: '2rem', color: '#234e70', marginBottom: 10, letterSpacing: 1 }}>Agregar Hotel</h2>
+            <input name="nombre" placeholder="Nombre del hotel" value={form.nombre} onChange={handleChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #bcd', fontSize: '1.1rem', background: '#f8fafc' }} />
+            <input name="direccion" placeholder="Dirección" value={form.direccion} onChange={handleChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #bcd', fontSize: '1.1rem', background: '#f8fafc' }} />
+            <textarea name="descripcion" placeholder="Descripción" value={form.descripcion} onChange={handleChange} required rows={3} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #bcd', fontSize: '1.1rem', background: '#f8fafc', resize: 'vertical' }} />
+            <input name="precio" placeholder="Precio (ej: Q500/noche)" value={form.precio} onChange={handleChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #bcd', fontSize: '1.1rem', background: '#f8fafc' }} />
+            <input name="url" placeholder="Sitio web o reserva" value={form.url} onChange={handleChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #bcd', fontSize: '1.1rem', background: '#f8fafc' }} />
+            <label htmlFor="hotel-img-upload" style={{ display: 'inline-block', padding: '10px 15px', background: '#3182ce', color: 'white', borderRadius: '8px', cursor: 'pointer', textAlign: 'center', fontWeight: 'bold', userSelect: 'none', marginBottom: preview ? 0 : 10 }}>
+              {form.imagen ? `Imagen: ${form.imagen.name}` : 'Seleccionar Imagen'}
+            </label>
+            <input id="hotel-img-upload" name="imagen" type="file" accept="image/*" onChange={handleChange} required style={{ display: 'none' }} />
+            {preview && <img src={preview} alt="preview" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 10, marginBottom: 10, boxShadow: '0 2px 12px #3182ce22' }} />}
+            <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+              <button type="submit" disabled={loading} style={{ flex: 1, background: '#3182ce', color: '#fff', border: 'none', borderRadius: 8, padding: 12, fontWeight: 700, fontSize: '1.1rem', cursor: loading ? 'not-allowed' : 'pointer', boxShadow: '0 2px 12px #3182ce22', transition: 'background 0.2s' }}>{loading ? 'Guardando...' : 'Guardar'}</button>
+              <button type="button" onClick={handleCancel} style={{ flex: 1, background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 8, padding: 12, fontWeight: 700, fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 2px 12px #e53e3e22', transition: 'background 0.2s' }}>Cancelar</button>
             </div>
           </form>
+          {/* Modal de confirmación para cancelar */}
+          {confirmCancel && (
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ background: 'white', borderRadius: '16px', padding: '2rem 2.5rem', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', textAlign: 'center', minWidth: '280px' }}>
+                <h3 style={{marginBottom:'1rem', color:'#e53e3e'}}>¿Seguro que quieres cancelar el registro?</h3>
+                <div style={{display:'flex', justifyContent:'center', gap:'1.5rem'}}>
+                  <button style={{background:'#e53e3e', color:'white', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontWeight:'bold', cursor:'pointer'}} onClick={() => { setShow(false); setPreview(null); setConfirmCancel(false); }}>Sí, cancelar</button>
+                  <button style={{background:'#3182ce', color:'white', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontWeight:'bold', cursor:'pointer'}} onClick={() => setConfirmCancel(false)}>No, volver</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {success && (

@@ -1,32 +1,125 @@
 'use client';
 
-export default function Contacto() {
+
+import { useState, useEffect } from 'react';
+
+export default function Reseñas() {
+  const [reseñas, setReseñas] = useState([]);
+  const [nombre, setNombre] = useState('');
+  const [lugar, setLugar] = useState('');
+  const [comentario, setComentario] = useState('');
+  const [calificacion, setCalificacion] = useState(5);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/reviews')
+      .then(res => res.json())
+      .then(data => setReseñas(data));
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!nombre || !lugar || !comentario) return;
+    setLoading(true);
+    const res = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, lugar, comentario, calificacion })
+    });
+    if (res.ok) {
+      const nuevaReseña = await res.json();
+      setReseñas([nuevaReseña, ...reseñas]);
+      setNombre('');
+      setLugar('');
+      setComentario('');
+      setCalificacion(5);
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 2500);
+    }
+    setLoading(false);
+  };
+
+  const promedio = reseñas.length ? (reseñas.reduce((acc, r) => acc + r.calificacion, 0) / reseñas.length).toFixed(1) : null;
+
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Contacto</h1>
+      {showModal && (
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <span style={{fontSize:'2rem', color:'#22c55e'}}>✔</span>
+            <h3 style={{margin:'0.5rem 0', color:'#2563eb'}}>¡Gracias por tu comentario!</h3>
+            <p style={{color:'#475569'}}>Tu reseña fue guardada con éxito.</p>
+          </div>
+        </div>
+      )}
+      <h1 style={styles.title}>Reseñas y Calificaciones</h1>
       <p style={styles.description}>
-        ¡Hola! Soy <strong>Brandon Nájera</strong>, encantado de ayudarte.
-      </p>
-      
-      <div style={styles.infoBox}>
-        <p><strong>Teléfono:</strong> <a href="tel:+50555315760" style={styles.link}>5531 5760</a></p>
-        <p><strong>Email:</strong> <a href="mailto:brandonjnaujera0803@gmail.com" style={styles.link}>brandonjnaujera0803@gmail.com</a></p>
-      </div>
-
-      <h2 style={styles.subTitle}>¡Conectemos!</h2>
-      <p style={styles.text}>
-        Si tienes alguna pregunta o quieres colaborar, no dudes en contactarme.
-        Estoy disponible para proyectos, asesorías o simplemente para charlar sobre tecnología y desarrollo web.
+        Comparte tu opinión y ayuda a otros viajeros a tomar mejores decisiones sobre los destinos turísticos.
       </p>
 
-      <div style={styles.socialContainer}>
-        {/* Puedes agregar iconos o links a redes sociales aquí */}
-        <a href="https://linkedin.com/in/brandon-najera" target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
-          LinkedIn
-        </a>
-        <a href="https://github.com/brandonnajera" target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
-          GitHub
-        </a>
+      <form onSubmit={handleSubmit} style={styles.infoBox}>
+        <h2 style={styles.subTitle}>Deja tu reseña</h2>
+        <input
+          type="text"
+          placeholder="Tu nombre"
+          value={nombre}
+          onChange={e => setNombre(e.target.value)}
+          style={{...styles.input, marginBottom: '1rem'}}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Lugar que visitaste"
+          value={lugar}
+          onChange={e => setLugar(e.target.value)}
+          style={{...styles.input, marginBottom: '1rem'}}
+          required
+        />
+        <textarea
+          placeholder="Tu opinión sobre el destino"
+          value={comentario}
+          onChange={e => setComentario(e.target.value)}
+          style={{...styles.input, height: '80px', marginBottom: '1rem'}}
+          required
+        />
+        <div style={{marginBottom: '1rem'}}>
+          <label>Calificación: </label>
+          <select value={calificacion} onChange={e => setCalificacion(Number(e.target.value))} style={styles.input}>
+            {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} estrellas</option>)}
+          </select>
+        </div>
+        <button type="submit" style={styles.button} disabled={loading}>{loading ? 'Enviando...' : 'Enviar reseña'}</button>
+      </form>
+
+      {promedio && (
+        <div style={{...styles.infoBox, marginTop: '2rem'}}>
+          <strong>Promedio de calificaciones:</strong> {promedio} / 5
+        </div>
+      )}
+
+      <div style={{marginTop: '2rem'}}>
+        <h2 style={styles.subTitle}>Opiniones de visitantes</h2>
+        {reseñas.length === 0 ? (
+          <p style={styles.text}>Sé el primero en dejar una reseña.</p>
+        ) : (
+          reseñas.map((r, i) => (
+            <div key={r.id || i} style={{...styles.infoBox, marginBottom: '1rem', textAlign: 'left'}}>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                <div>
+                  <strong>{r.nombre}</strong> <span style={{color:'#475569'}}>visitó <b>{r.lugar}</b></span>
+                </div>
+                <div style={{display:'flex', alignItems:'center'}}>
+                  {Array.from({length:5}).map((_, idx) => (
+                    <span key={idx} style={{color: idx < r.calificacion ? '#f59e42' : '#cbd5e1', fontSize:'1.3rem', marginRight:'2px'}}>★</span>
+                  ))}
+                  <span style={{marginLeft:'8px', color:'#64748b', fontSize:'0.95rem'}}>{new Date(r.fecha).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <p style={{marginTop:'0.5rem'}}>{r.comentario}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -83,18 +176,47 @@ const styles = {
     color: '#475569',
     marginBottom: '2rem',
   },
-  socialContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '2rem',
+  input: {
+    width: '100%',
+    padding: '0.5rem',
+    borderRadius: '6px',
+    border: '1px solid #cbd5e1',
+    fontSize: '1rem',
+    marginBottom: '0.5rem',
+    boxSizing: 'border-box',
   },
-  socialLink: {
-    fontSize: '1.15rem',
-    color: '#2563eb',
-    textDecoration: 'none',
+  button: {
+    backgroundColor: '#2563eb',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    padding: '0.75rem 1.5rem',
+    fontSize: '1rem',
     fontWeight: '700',
-    borderBottom: '2px solid transparent',
-    transition: 'border-color 0.3s ease',
     cursor: 'pointer',
-  }
+    marginTop: '0.5rem',
+    transition: 'background 0.2s',
+  },
+  modal: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0,0,0,0.15)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+    animation: 'fadeIn 0.3s',
+  },
+  modalContent: {
+    background: '#fff',
+    borderRadius: '12px',
+    padding: '2rem 2.5rem',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    textAlign: 'center',
+    minWidth: '280px',
+    animation: 'popIn 0.3s',
+  },
 };

@@ -41,3 +41,12 @@ model Hotel {
   url       String
   imagen    String
 }
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  lugar       String?
+  comentario  String
+  calificacion Int
+  fecha       DateTime @default(now())
+}

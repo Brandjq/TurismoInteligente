@@ -12,11 +12,10 @@ export default function Solola() {
   const [modalIndex, setModalIndex] = useState(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const [showMsg, setShowMsg] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
-  
-
-  
-  
   const [attractions, setAttractions] = useState([
     {
       name: 'San Lucas Tolimán',
@@ -447,10 +446,33 @@ return (
     <section className={styles.attractionsSection}>
       {attractions.map((attraction, index) => (
         <div
-          key={index}
+          key={attraction.id || index}
           className={styles.attractionCard}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', position: 'relative' }}
         >
+          {/* Botón X para borrar */}
+          <button
+            style={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              background: '#e53e3e',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: 28,
+              height: 28,
+              fontSize: '1.1rem',
+              cursor: 'pointer',
+              zIndex: 2,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+            }}
+            title="Eliminar atractivo"
+            onClick={(e) => {
+              e.stopPropagation();
+              setConfirmDelete({ show: true, id: attraction.id });
+            }}
+          >×</button>
           <div className={styles.imageWrapper}>
             {attraction.image_url && (
               <Image
@@ -623,6 +645,82 @@ return (
           setShowNewForm(false);
         }}
       />
+    )}
+    {/* Modal de confirmación para eliminar */}
+    {confirmDelete.show && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.25)',
+        zIndex: 3000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '2rem 2.5rem',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+          textAlign: 'center',
+          minWidth: '280px',
+        }}>
+          <h3 style={{marginBottom:'1rem', color:'#e53e3e'}}>¿Seguro que quieres eliminar este lugar?</h3>
+          <div style={{display:'flex', justifyContent:'center', gap:'1.5rem'}}>
+            <button
+              style={{background:'#e53e3e', color:'white', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontWeight:'bold', cursor:'pointer'}}
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/attractions', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: confirmDelete.id })
+                  });
+                  if (res.ok) {
+                    setAttractions(prev => prev.filter(a => a.id !== confirmDelete.id));
+                    setMsg('Atractivo eliminado exitosamente');
+                  } else {
+                    setMsg('Error al eliminar');
+                  }
+                } catch {
+                  setMsg('Error de conexión');
+                }
+                setShowMsg(true);
+                setTimeout(() => setShowMsg(false), 2000);
+                setConfirmDelete({ show: false, id: null });
+              }}
+            >Sí, eliminar</button>
+            <button
+              style={{background:'#3182ce', color:'white', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontWeight:'bold', cursor:'pointer'}}
+              onClick={() => setConfirmDelete({ show: false, id: null })}
+            >No, cancelar</button>
+          </div>
+        </div>
+      </div>
+    )}
+    {/* Mensaje visual flotante para eliminar */}
+    {showMsg && (
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        background: msg && msg.includes('exitosamente') ? '#38a169' : '#e53e3e',
+        color: 'white',
+        padding: '1.2rem 2.2rem',
+        borderRadius: '14px',
+        fontWeight: 'bold',
+        fontSize: '1.2rem',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+        zIndex: 2000,
+        textAlign: 'center',
+        animation: 'popIn 0.3s',
+      }}>
+        {msg}
+      </div>
     )}
   </main>
 );

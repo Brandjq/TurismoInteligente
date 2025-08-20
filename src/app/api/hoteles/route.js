@@ -36,3 +36,16 @@ export async function POST(req) {
   await prisma.$disconnect();
   return Response.json(hotel);
 }
+export async function DELETE(req) {
+  const prisma = new PrismaClient();
+  try {
+    const { id } = await req.json();
+    if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 });
+    await prisma.hotel.delete({ where: { id } });
+    await prisma.$disconnect();
+    return Response.json({ success: true });
+  } catch (err) {
+    await prisma.$disconnect();
+    return Response.json({ error: 'Error al eliminar hotel' }, { status: 500 });
+  }
+}

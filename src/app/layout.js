@@ -83,50 +83,10 @@ export default function RootLayout({ children }) {
               display: block !important;
             }
           }
-          @media (max-width: 600px) {
-            .menu {
-              padding: 1rem 1rem 1rem 1rem;
+          @media (min-width: 901px) {
+            .menu-toggle {
+              display: none !important;
             }
-            .nav-link {
-              font-size: 1.05rem !important;
-              padding: 0.7rem 1rem !important;
-            }
-          }
-          .nav-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.18rem;
-            font-weight: 700;
-            color: #fff;
-            text-decoration: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 10px;
-            position: relative;
-            transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-          }
-          .nav-link:hover, .nav-link:focus {
-            background: rgba(255,255,255,0.13);
-            color: #e0e7ff;
-            box-shadow: 0 2px 12px #3182ce44;
-          }
-          .nav-link::after {
-            content: '';
-            display: block;
-            position: absolute;
-            left: 18px;
-            bottom: 6px;
-            width: 70%;
-            height: 3px;
-            background: linear-gradient(90deg, #38b2ac 0%, #3182ce 100%);
-            border-radius: 2px;
-            opacity: 0;
-            transform: scaleX(0.7);
-            transition: opacity 0.22s, transform 0.22s;
-          }
-          .nav-link:hover::after, .nav-link:focus::after {
-            opacity: 1;
-            transform: scaleX(1);
           }
         `}</style>
         <main>{children}</main>

@@ -14,6 +14,30 @@ const sololaImages = [
 ];
 
 export default function HistoriaSolola() {
+  // Estado para bloques de información agregados por el admin
+  const [infoBlocks, setInfoBlocks] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
+  const [newText, setNewText] = useState("");
+  const [newImage, setNewImage] = useState(null);
+  const [newLink, setNewLink] = useState("");
+  const [showNotif, setShowNotif] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingBlock, setPendingBlock] = useState(null);
+  const isAdmin = true; // Cambia a false para ocultar el editor
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  useEffect(() => {
+    if (isMounted) {
+      const saved = localStorage.getItem('historiaBlocks');
+      if (saved) setInfoBlocks(JSON.parse(saved));
+    }
+  }, [isMounted]);
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('historiaBlocks', JSON.stringify(infoBlocks));
+    }
+  }, [infoBlocks, isMounted]);
   const [current, setCurrent] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -397,13 +421,25 @@ export default function HistoriaSolola() {
         <h3>Gastronomía</h3>
         <div style={{display:'flex',gap:'2.2rem',flexWrap:'wrap',alignItems:'center',marginBottom:'2.2rem'}}>
           <div style={{flex:'2 1 420px',minWidth:320}}>
+                    background: 'linear-gradient(90deg, #1abc9c 0%, #3498db 100%)',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontSize: '1.5rem',
+                    border: 'none',
+                    borderRadius: '18px',
+                    padding: '1rem 3rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 32px rgba(52,152,219,0.18)',
+                    transition: 'background 0.3s, transform 0.2s',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '1.2rem',
+                    fontFamily: 'Montserrat, Poppins, Arial, sans-serif',
+                    maxWidth: '98vw',
+                    wordBreak: 'break-word'
             <p>
-              La cocina de Sololá destaca por platillos como el pepián, pulique, caldo de gallina, tamales, pescado del lago y tortillas de maíz. El café de la región es reconocido por su calidad.
+              Entre las leyendas más conocidas está la del &quot;Rostro Maya&quot;, la historia de Maximón y relatos sobre el origen del lago. Personajes históricos incluyen líderes indígenas y promotores de la cultura local.
             </p>
-            <img src="/file.gif" alt="GIF gastronomía" className="gif-gastro" />
-          </div>
-          <div style={{flex:'1 1 320px',minWidth:260,maxWidth:400}}>
-            <Image src="/pascual.jpg" alt="Gastronomía de Sololá" width={400} height={260} style={{borderRadius:18,objectFit:'cover',width:'100%'}} />
           </div>
         </div>
         <h3>Retos y Futuro</h3>
@@ -436,6 +472,125 @@ export default function HistoriaSolola() {
           </Link>
         </div>
       </section>
-    </main>
+      {/* Bloques de información agregados por el admin, al final de la página */}
+      {isMounted && infoBlocks.length > 0 && (
+        <section style={{ margin: "2.5rem auto 0 auto", maxWidth: 900, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h2 style={{ fontSize: "2rem", color: "#2d3748", marginBottom: "1rem", textAlign: 'center' }}>Información adicional</h2>
+          {infoBlocks.map((block, idx) => (
+            <div key={idx} style={{ background: "#f7fafc", borderRadius: 12, padding: 16, marginBottom: 16, position: "relative", maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {block.image && (
+                <img src={block.image} alt="Imagen info" style={{ maxWidth: 320, borderRadius: 8, marginBottom: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }} />
+              )}
+              <div style={{ fontSize: "1.1rem", color: "#222", marginBottom: 8, textAlign: 'center' }}>{block.text}</div>
+              {block.link && (
+                <a href={block.link} target="_blank" rel="noopener noreferrer">
+                  <button style={{ background: "#3182ce", color: "white", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: "bold", fontSize: "1rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33", marginBottom: 8 }}>
+                    Ir al enlace
+                  </button>
+                </a>
+              )}
+              <button
+                style={{ position: "absolute", top: 8, right: 8, background: "#e53e3e", color: "white", border: "none", borderRadius: "50%", width: 28, height: 28, fontSize: "1.1rem", cursor: "pointer" }}
+                title="Suprimir bloque"
+                onClick={() => {
+                  setInfoBlocks(infoBlocks.filter((_, i) => i !== idx));
+                }}
+              >×</button>
+            </div>
+          ))}
+        </section>
+      )}
+      {/* Editor local solo para admin al final */}
+      {isMounted && isAdmin && (
+        <section style={{ background: "#f8fafc", borderRadius: 16, padding: 28, margin: "2.5rem auto 2rem auto", maxWidth: 900, boxShadow: "0 4px 24px #3182ce22" }}>
+          <h2 style={{ fontSize: "1.5rem", color: "#2b6cb0", marginBottom: 18, fontWeight: 700, letterSpacing: 0.5 }}>Agregar información dinámica</h2>
+          <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={e => {
+            e.preventDefault();
+            if (newText.trim() !== "" || newImage || newLink) {
+              setPendingBlock({ text: newText, image: newImage, link: newLink });
+              setShowConfirm(true);
+            }
+          }}>
+            <input
+              type="url"
+              value={newLink}
+              onChange={e => setNewLink(e.target.value)}
+              placeholder="Enlace (opcional, ej: https://...)"
+              style={{ fontSize: "1rem", borderRadius: 8, border: "1px solid #90cdf4", padding: "10px 14px", background: "#fff" }}
+            />
+            {newLink && (
+              <span style={{ color: newLink.startsWith('http') ? '#38a169' : '#e53e3e', fontSize: '0.98rem', marginTop: 2 }}>
+                {newLink.startsWith('http') ? 'Enlace listo para guardar.' : 'El enlace debe comenzar con http:// o https://'}
+              </span>
+            )}
+            <textarea
+              value={newText}
+              onChange={e => setNewText(e.target.value)}
+              placeholder="Escribe la información aquí..."
+              style={{ width: "100%", minHeight: 70, borderRadius: 8, border: "1px solid #90cdf4", padding: 10, fontSize: "1.08rem", background: "#fff" }}
+            />
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <label htmlFor="file-upload" style={{ fontWeight: 500, color: "#2b6cb0", marginBottom: 0 }}>Imagen (opcional):</label>
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={e => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = ev => setNewImage(ev.target.result);
+                    reader.readAsDataURL(file);
+                  } else {
+                    setNewImage(null);
+                  }
+                }}
+              />
+              <label htmlFor="file-upload" style={{ background: "#3182ce", color: "white", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: "bold", fontSize: "1rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33", border: "none", marginRight: 8 }}>
+                Seleccionar archivo
+              </label>
+              <span style={{ fontSize: "0.98rem", color: "#2b6cb0" }}>{newImage ? "Archivo seleccionado" : "Ningún archivo seleccionado"}</span>
+            </div>
+            {newImage && (
+              <img src={newImage} alt="Preview" style={{ maxWidth: 220, borderRadius: 10, marginBottom: 8, boxShadow: "0 2px 12px #3182ce33" }} />
+            )}
+            <button
+              type="submit"
+              style={{ background: "linear-gradient(90deg,#3182ce 60%,#63b3ed 100%)", color: "white", border: "none", borderRadius: 8, padding: "0.7rem 1.5rem", fontWeight: "bold", fontSize: "1.15rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33", marginTop: 8, transition: "background 0.2s" }}
+            >Agregar bloque</button>
+          </form>
+        </section>
+      )}
+      {showNotif && (
+        <div style={{ background: '#38a169', color: 'white', padding: '18px 24px', borderRadius: 12, fontWeight: 'bold', fontSize: '1.15rem', marginBottom: 14, textAlign: 'center', boxShadow: '0 2px 18px #38a16933', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: '1.25rem', marginBottom: 6 }}>✅ Información publicada</span>
+          <button onClick={() => setShowNotif(false)} style={{ background: '#fff', color: '#38a169', border: 'none', borderRadius: 8, padding: '6px 22px', fontWeight: 'bold', fontSize: '1.08rem', cursor: 'pointer', boxShadow: '0 1px 6px #38a16922', marginTop: 4 }}>Aceptar</button>
+        </div>
+      )}
+      {showConfirm && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0008', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#fff', padding: '32px 28px', borderRadius: 16, boxShadow: '0 2px 24px #2224', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, minWidth: 320 }}>
+            <span style={{ fontSize: '1.18rem', fontWeight: 'bold', marginBottom: 8 }}>¿Estás de acuerdo en publicar esta información?</span>
+            <div style={{ display: 'flex', gap: 24 }}>
+              <button onClick={() => {
+                if (pendingBlock) {
+                  const updatedBlocks = [...infoBlocks, pendingBlock];
+                  setInfoBlocks(updatedBlocks);
+                  localStorage.setItem('historiaBlocks', JSON.stringify(updatedBlocks));
+                  setNewText('');
+                  setNewImage(null);
+                  setNewLink("");
+                  setShowNotif(true);
+                }
+                setShowConfirm(false);
+                setPendingBlock(null);
+              }} style={{ background: '#38a169', color: 'white', border: 'none', borderRadius: 8, padding: '10px 28px', fontWeight: 'bold', fontSize: '1.25rem', cursor: 'pointer', boxShadow: '0 1px 8px #38a16922' }}>✔️</button>
+              <button onClick={() => { setShowConfirm(false); setPendingBlock(null); }} style={{ background: '#e53e3e', color: 'white', border: 'none', borderRadius: 8, padding: '10px 28px', fontWeight: 'bold', fontSize: '1.25rem', cursor: 'pointer', boxShadow: '0 1px 8px #e53e3e22' }}>❌</button>
+            </div>
+          </div>
+        </div>
+      )}
+  </main>
   );
 }

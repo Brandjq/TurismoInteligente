@@ -1,7 +1,11 @@
+
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+
+// Estado para bloques de información agregados por el admin
+// (debe ir dentro del componente Home)
 
 const lakeImages = [
   '/lago.jpg',
@@ -9,9 +13,39 @@ const lakeImages = [
   '/san-pedro-la-laguna.jpg',
   '/santiago-atitlan.jpg',
 ];
-
 export default function Home() {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingBlock, setPendingBlock] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [newLink, setNewLink] = useState("");
+  // ...existing code...
+  // Estado para bloques de información agregados por el admin
+  const [infoBlocks, setInfoBlocks] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('infoBlocks');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+  // Estado para el editor local
+  const [newText, setNewText] = useState("");
+  const [newImage, setNewImage] = useState(null);
+  const [showNotif, setShowNotif] = useState(false);
+  // Simulación de admin (cambiar a false para ocultar el editor)
+  const isAdmin = true;
   const [current, setCurrent] = useState(0);
+
+  // Cambia la imagen automáticamente cada 3 segundos
+  // Guardar infoBlocks en localStorage cada vez que cambian
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('infoBlocks', JSON.stringify(infoBlocks));
+    }
+  }, [infoBlocks]);
 
   // Cambia la imagen automáticamente cada 3 segundos
   useEffect(() => {
@@ -38,6 +72,7 @@ export default function Home() {
         .banner-animado {
           animation: bannerFade 1.2s cubic-bezier(.4,2,.6,1);
         }
+          </div>
         .clima-animado {
           background: linear-gradient(120deg, #e1f5fe 60%, #b2dfdb 100%);
           border-radius: 22px;
@@ -57,7 +92,7 @@ export default function Home() {
         }
         .clima-animado .icono {
           width: 64px;
-          height: 64px;
+            const [newImage, setNewImage] = useState("");
           margin-right: 1.1rem;
           filter: drop-shadow(0 2px 8px #b2ebf2);
           animation: solMove 2.5s infinite alternate cubic-bezier(.4,2,.6,1);
@@ -172,6 +207,7 @@ export default function Home() {
           }}
         />
       </div>
+ 
       {/* Eliminado clima duplicado, solo queda el bloque flex con clima e historia */}
       {/* Clima y botón historia juntos en flex */}
       <div style={{ display: 'flex', gap: '2.2rem', justifyContent: 'center', alignItems: 'stretch', flexWrap: 'wrap', marginBottom: '2.2rem' }}>
@@ -494,6 +530,34 @@ export default function Home() {
         </div>
       </section>
       <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
+      {/* Bloques de información agregados por el admin, en orden de agregados arriba del botón */}
+      {isMounted && infoBlocks.length > 0 && (
+        <section style={{ margin: "0 auto 2.5rem auto", maxWidth: 900 }}>
+          <h2 style={{ fontSize: "2rem", color: "#2d3748", marginBottom: "1rem" }}>Información adicional</h2>
+          {infoBlocks.map((block, idx) => (
+            <div key={idx} style={{ background: "#f7fafc", borderRadius: 12, padding: 16, marginBottom: 16, position: "relative" }}>
+              {block.image && (
+                <img src={block.image} alt="Imagen info" style={{ maxWidth: 320, borderRadius: 8, marginBottom: 8 }} />
+              )}
+              <div style={{ fontSize: "1.1rem", color: "#222", marginBottom: 8 }}>{block.text}</div>
+              {block.link && (
+                <a href={block.link} target="_blank" rel="noopener noreferrer">
+                  <button style={{ background: "#3182ce", color: "white", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: "bold", fontSize: "1rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33", marginBottom: 8 }}>
+                    Ir al enlace
+                  </button>
+                </a>
+              )}
+              <button
+                style={{ position: "absolute", top: 8, right: 8, background: "#e53e3e", color: "white", border: "none", borderRadius: "50%", width: 28, height: 28, fontSize: "1.1rem", cursor: "pointer" }}
+                title="Suprimir bloque"
+                onClick={() => {
+                  setInfoBlocks(infoBlocks.filter((_, i) => i !== idx));
+                }}
+              >×</button>
+            </div>
+          ))}
+        </section>
+      )}
         <Link href="/attractions/solola">
           <button
             style={{
@@ -523,6 +587,118 @@ export default function Home() {
           </button>
         </Link>
       </div>
+      {/* Editor local solo para admin al final */}
+      {isAdmin && (
+        <section style={{ background: "#f8fafc", borderRadius: 16, padding: 28, margin: "2.5rem auto 2rem auto", maxWidth: 900, boxShadow: "0 4px 24px #3182ce22" }}>
+          <h2 style={{ fontSize: "1.5rem", color: "#2b6cb0", marginBottom: 18, fontWeight: 700, letterSpacing: 0.5 }}>Agregar información dinámica</h2>
+          <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={e => {
+            e.preventDefault();
+            if (newText.trim() !== "" || newImage || newLink) {
+              setPendingBlock({ text: newText, image: newImage, link: newLink });
+              setShowConfirm(true);
+            }
+          }}>
+      {showNotif && (
+        <div style={{ background: '#38a169', color: 'white', padding: '18px 24px', borderRadius: 12, fontWeight: 'bold', fontSize: '1.15rem', marginBottom: 14, textAlign: 'center', boxShadow: '0 2px 18px #38a16933', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: '1.25rem', marginBottom: 6 }}>✅ Información publicada</span>
+          <button onClick={() => setShowNotif(false)} style={{ background: '#fff', color: '#38a169', border: 'none', borderRadius: 8, padding: '6px 22px', fontWeight: 'bold', fontSize: '1.08rem', cursor: 'pointer', boxShadow: '0 1px 6px #38a16922', marginTop: 4 }}>Aceptar</button>
+        </div>
+      )}
+      {showConfirm && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0008', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#fff', padding: '32px 28px', borderRadius: 16, boxShadow: '0 2px 24px #2224', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, minWidth: 320 }}>
+            <span style={{ fontSize: '1.18rem', fontWeight: 'bold', marginBottom: 8 }}>¿Estás de acuerdo en publicar esta información?</span>
+            <div style={{ display: 'flex', gap: 24 }}>
+              <button onClick={() => {
+                if (pendingBlock) {
+                  const updatedBlocks = [...infoBlocks, pendingBlock];
+                  setInfoBlocks(updatedBlocks);
+                  localStorage.setItem('infoBlocks', JSON.stringify(updatedBlocks));
+                  setNewText('');
+                  setNewImage(null);
+                  setNewLink("");
+                  setShowNotif(true);
+                }
+                setShowConfirm(false);
+                setPendingBlock(null);
+              }} style={{ background: '#38a169', color: 'white', border: 'none', borderRadius: 8, padding: '10px 28px', fontWeight: 'bold', fontSize: '1.25rem', cursor: 'pointer', boxShadow: '0 1px 8px #38a16922' }}>✔️</button>
+              <button onClick={() => { setShowConfirm(false); setPendingBlock(null); }} style={{ background: '#e53e3e', color: 'white', border: 'none', borderRadius: 8, padding: '10px 28px', fontWeight: 'bold', fontSize: '1.25rem', cursor: 'pointer', boxShadow: '0 1px 8px #e53e3e22' }}>❌</button>
+            </div>
+          </div>
+        </div>
+      )}
+            <input
+              type="url"
+              value={newLink}
+              onChange={e => setNewLink(e.target.value)}
+              placeholder="Enlace (opcional, ej: https://...)"
+              style={{ fontSize: "1rem", borderRadius: 8, border: "1px solid #90cdf4", padding: "10px 14px", background: "#fff" }}
+            />
+            {newLink && (
+              <span style={{ color: newLink.startsWith('http') ? '#38a169' : '#e53e3e', fontSize: '0.98rem', marginTop: 2 }}>
+                {newLink.startsWith('http') ? 'Enlace listo para guardar.' : 'El enlace debe comenzar con http:// o https://'}
+              </span>
+            )}
+      {/* Renderizar los bloques agregados por el admin */}
+      {isMounted && infoBlocks.length > 0 && (
+        <section style={{ margin: "2rem auto", maxWidth: 900 }}>
+          {infoBlocks.map((block, idx) => (
+            <div key={idx} style={{ background: "#e3f2fd", borderRadius: 12, padding: 18, marginBottom: 18, boxShadow: "0 2px 12px #3182ce22" }}>
+              {block.image && (
+                <img src={block.image} alt="Imagen bloque" style={{ maxWidth: 180, borderRadius: 8, marginBottom: 10 }} />
+              )}
+              <p style={{ fontSize: "1.08rem", marginBottom: block.link ? 10 : 0 }}>{block.text}</p>
+              {block.link && (
+                <a href={block.link} target="_blank" rel="noopener noreferrer">
+                  <button style={{ background: "#3182ce", color: "white", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: "bold", fontSize: "1rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33" }}>
+                    Ir al enlace
+                  </button>
+                </a>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+            <textarea
+              value={newText}
+              onChange={e => setNewText(e.target.value)}
+              placeholder="Escribe la información aquí..."
+              style={{ width: "100%", minHeight: 70, borderRadius: 8, border: "1px solid #90cdf4", padding: 10, fontSize: "1.08rem", background: "#fff" }}
+            />
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <label htmlFor="file-upload" style={{ fontWeight: 500, color: "#2b6cb0", marginBottom: 0 }}>Imagen (opcional):</label>
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={e => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = ev => setNewImage(ev.target.result);
+                    reader.readAsDataURL(file);
+                  } else {
+                    setNewImage(null);
+                  }
+                }}
+              />
+              <label htmlFor="file-upload" style={{ background: "#3182ce", color: "white", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: "bold", fontSize: "1rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33", border: "none", marginRight: 8 }}>
+                Seleccionar archivo
+              </label>
+              <span style={{ fontSize: "0.98rem", color: "#2b6cb0" }}>{newImage ? "Archivo seleccionado" : "Ningún archivo seleccionado"}</span>
+            </div>
+            {newImage && (
+              <img src={newImage} alt="Preview" style={{ maxWidth: 220, borderRadius: 10, marginBottom: 8, boxShadow: "0 2px 12px #3182ce33" }} />
+            )}
+            <button
+              type="submit"
+              style={{ background: "linear-gradient(90deg,#3182ce 60%,#63b3ed 100%)", color: "white", border: "none", borderRadius: 8, padding: "0.7rem 1.5rem", fontWeight: "bold", fontSize: "1.15rem", cursor: "pointer", boxShadow: "0 2px 12px #3182ce33", marginTop: 8, transition: "background 0.2s" }}
+            >Agregar bloque</button>
+          </form>
+        </section>
+      )}
+
     </main>
   );
 }

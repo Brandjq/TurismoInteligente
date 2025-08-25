@@ -419,29 +419,15 @@ export default function HistoriaSolola() {
           <li><b>San Pablo, San Jorge, San Antonio, Santa Clara, Santa María, San Andrés, San José, Concepción:</b> Municipios con tradiciones propias, paisajes y cultura viva.</li>
         </ul>
         <h3>Gastronomía</h3>
-        <div style={{display:'flex',gap:'2.2rem',flexWrap:'wrap',alignItems:'center',marginBottom:'2.2rem'}}>
-          <div style={{flex:'2 1 420px',minWidth:320}}>
-                    background: 'linear-gradient(90deg, #1abc9c 0%, #3498db 100%)',
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    fontSize: '1.5rem',
-                    border: 'none',
-                    borderRadius: '18px',
-                    padding: '1rem 3rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 6px 32px rgba(52,152,219,0.18)',
-                    transition: 'background 0.3s, transform 0.2s',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '1.2rem',
-                    fontFamily: 'Montserrat, Poppins, Arial, sans-serif',
-                    maxWidth: '98vw',
-                    wordBreak: 'break-word'
-            <p>
-              Entre las leyendas más conocidas está la del &quot;Rostro Maya&quot;, la historia de Maximón y relatos sobre el origen del lago. Personajes históricos incluyen líderes indígenas y promotores de la cultura local.
-            </p>
-          </div>
-        </div>
+<div style={{display:'flex',gap:'2.2rem',flexWrap:'wrap',alignItems:'center',marginBottom:'2.2rem'}}>
+  <div style={{flex:'2 1 420px',minWidth:320}}>
+    <p>
+      Entre las leyendas más conocidas está la del &quot;Rostro Maya&quot;, la historia de Maximón y relatos sobre el origen del lago. 
+      Personajes históricos incluyen líderes indígenas y promotores de la cultura local.
+    </p>
+  </div>
+</div>
+
         <h3>Retos y Futuro</h3>
         <p>
           Sololá enfrenta desafíos como la conservación ambiental del lago, el desarrollo sostenible del turismo y la preservación de su cultura. Sin embargo, la fortaleza de sus comunidades y su riqueza natural y cultural auguran un futuro prometedor.
@@ -479,7 +465,7 @@ export default function HistoriaSolola() {
           {infoBlocks.map((block, idx) => (
             <div key={idx} style={{ background: "#f7fafc", borderRadius: 12, padding: 16, marginBottom: 16, position: "relative", maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {block.image && (
-                <img src={block.image} alt="Imagen info" style={{ maxWidth: 320, borderRadius: 8, marginBottom: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }} />
+                <Image src={block.image} alt="Imagen info" width={320} height={220} style={{ maxWidth: 320, borderRadius: 8, marginBottom: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto', objectFit: 'cover' }} />
               )}
               <div style={{ fontSize: "1.1rem", color: "#222", marginBottom: 8, textAlign: 'center' }}>{block.text}</div>
               {block.link && (
@@ -553,7 +539,7 @@ export default function HistoriaSolola() {
               <span style={{ fontSize: "0.98rem", color: "#2b6cb0" }}>{newImage ? "Archivo seleccionado" : "Ningún archivo seleccionado"}</span>
             </div>
             {newImage && (
-              <img src={newImage} alt="Preview" style={{ maxWidth: 220, borderRadius: 10, marginBottom: 8, boxShadow: "0 2px 12px #3182ce33" }} />
+              <Image src={newImage} alt="Preview" width={220} height={140} style={{ maxWidth: 220, borderRadius: 10, marginBottom: 8, boxShadow: "0 2px 12px #3182ce33", objectFit: 'cover' }} />
             )}
             <button
               type="submit"

@@ -47,10 +47,37 @@ export default function RootLayout({ children }) {
         <header className="navbar" style={{ background: 'linear-gradient(90deg, #3182ce 60%, #38b2ac 100%)', boxShadow: '0 2px 16px #3182ce22', padding: '0.5rem 0', borderRadius: '0 0 18px 18px', position: 'relative' }}>
           <nav className="menu-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '56px', position: 'relative' }}>
             {/* Hamburger button for mobile */}
-            <button className="menu-toggle" aria-label="Abrir menú" style={{ display: 'none', background: 'none', border: 'none', position: 'absolute', right: 18, top: 10, zIndex: 100, cursor: 'pointer' }} onClick={() => setMenuOpen(!menuOpen)}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
-            <ul className={`menu${menuOpen ? ' open' : ''}`} style={{ display: 'flex', gap: '2.5rem', listStyle: 'none', margin: 0, padding: 0, flexDirection: 'row', alignItems: 'center', }}>
+            <div style={{ position: 'relative', width: '100%' }}>
+              <button className="menu-toggle" aria-label="Abrir menú" style={{ background: 'none', border: 'none', position: 'absolute', right: 18, top: 10, zIndex: 100, cursor: 'pointer', display: 'block' }} onClick={() => setMenuOpen(!menuOpen)}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              </button>
+              {/* Dropdown menu for mobile */}
+              {menuOpen && (
+                <ul className="menu-dropdown" style={{
+                  position: 'absolute',
+                  top: '44px',
+                  right: '0',
+                  background: 'white',
+                  color: '#222',
+                  boxShadow: '0 2px 12px #3182ce22',
+                  borderRadius: '0.75rem',
+                  padding: '0.5rem 0.75rem',
+                  minWidth: '160px',
+                  zIndex: 9999,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}>
+                  <li><Link href="/">Inicio</Link></li>
+                  <li><Link href="/recomendaciones">Recomendaciones</Link></li>
+                  <li><Link href="/rutas">Generación de rutas</Link></li>
+                  <li><Link href="/hoteles">Hoteles</Link></li>
+                  <li><Link href="/contacto">Calificaciones</Link></li>
+                </ul>
+              )}
+            </div>
+            {/* Desktop menu */}
+            <ul className="menu desktop-menu" style={{ display: 'flex', gap: '2.5rem', listStyle: 'none', margin: 0, padding: 0, flexDirection: 'row', alignItems: 'center' }}>
               <li style={{position:'relative'}}><Link href="/" className="nav-link">{navIcons.inicio}Inicio</Link></li>
               <li style={{position:'relative'}}><Link href="/recomendaciones" className="nav-link">{navIcons.recomendaciones}Recomendaciones</Link></li>
               <li style={{position:'relative'}}><Link href="/rutas" className="nav-link">{navIcons.rutas}Generación de rutas</Link></li>
@@ -61,30 +88,21 @@ export default function RootLayout({ children }) {
         </header>
         <style>{`
           @media (max-width: 900px) {
-            .menu {
-              position: absolute;
-              top: 56px;
-              left: 0;
-              right: 0;
-              background: linear-gradient(90deg, #3182ce 60%, #38b2ac 100%);
-              flex-direction: column !important;
-              gap: 0.5rem !important;
-              align-items: flex-start !important;
-              padding: 1.2rem 2rem 1.2rem 2rem;
-              box-shadow: 0 8px 32px #3182ce22;
-              border-radius: 0 0 18px 18px;
-              z-index: 99;
-              display: none;
-            }
-            .menu.open {
-              display: flex !important;
+            .desktop-menu {
+              display: none !important;
             }
             .menu-toggle {
               display: block !important;
             }
+            .menu-dropdown {
+              display: flex !important;
+            }
           }
           @media (min-width: 901px) {
             .menu-toggle {
+              display: none !important;
+            }
+            .menu-dropdown {
               display: none !important;
             }
           }

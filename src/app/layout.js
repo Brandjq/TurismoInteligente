@@ -294,9 +294,25 @@ export default function RootLayout({ children }) {
             }
             .menu-toggle {
               display: block !important;
+              position: absolute !important;
+              right: 18px;
+              top: 10px;
+              z-index: 100;
             }
             .menu-dropdown {
               display: flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              position: absolute !important;
+              top: 56px !important;
+              right: 0 !important;
+              width: 100vw !important;
+              min-width: unset !important;
+              border-radius: 0 0 18px 18px !important;
+              box-shadow: 0 2px 16px #3182ce44 !important;
+              background: linear-gradient(90deg, #3182ce 60%, #38b2ac 100%) !important;
+              padding: 1.2rem 0.5rem !important;
+              z-index: 9999 !important;
             }
           }
           @media (min-width: 901px) {

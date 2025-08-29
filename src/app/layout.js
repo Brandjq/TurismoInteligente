@@ -306,7 +306,8 @@ export default function RootLayout({ children }) {
               position: absolute !important;
               top: 56px !important;
               right: 0 !important;
-              width: 100vw !important;
+              left: 0 !important;
+              width: 100% !important;
               min-width: unset !important;
               border-radius: 0 0 18px 18px !important;
               box-shadow: 0 2px 16px #3182ce44 !important;
@@ -321,6 +322,10 @@ export default function RootLayout({ children }) {
             }
             .menu-dropdown {
               display: none !important;
+              position: static !important;
+              width: auto !important;
+              left: unset !important;
+              right: unset !important;
             }
             .desktop-menu {
               display: flex !important;

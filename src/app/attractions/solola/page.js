@@ -9,6 +9,17 @@ import NewAttractionForm from './NewAttractionForm';
 
 
 export default function Solola() {
+  // Detecta si el usuario es admin desde la cookie de sesión
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    const match = document.cookie.match(/session=([^;]+)/);
+    if (match) {
+      try {
+        const session = JSON.parse(decodeURIComponent(match[1]));
+        setIsAdmin(session.isAdmin === true);
+      } catch {}
+    }
+  }, []);
   const [modalIndex, setModalIndex] = useState(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
@@ -421,26 +432,28 @@ return (
       Explora los lugares más destacados de Sololá, llenos de belleza natural y cultural.
     </p>
 
-  <button
-  onClick={() => setShowNewForm(true)}
-  style={{
-    fontSize: '1.5rem',
-    padding: '0.4rem 1rem',
-    borderRadius: '8px',
-    border: 'none',
-    cursor: 'pointer',
-    marginBottom: '1rem',
-    backgroundColor: '#3182ce',
-    color: 'white',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem', // espacio entre + y texto
-  }}
-  aria-label="Agregar nuevo lugar"
->
-  <span style={{ fontSize: '2rem', lineHeight: 1 }}>+</span> Agregar Nuevo Lugar
-</button>
+  {isAdmin && (
+    <button
+      onClick={() => setShowNewForm(true)}
+      style={{
+        fontSize: '1.5rem',
+        padding: '0.4rem 1rem',
+        borderRadius: '8px',
+        border: 'none',
+        cursor: 'pointer',
+        marginBottom: '1rem',
+        backgroundColor: '#3182ce',
+        color: 'white',
+        fontWeight: 'bold',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+      }}
+      aria-label="Agregar nuevo lugar"
+    >
+      <span style={{ fontSize: '2rem', lineHeight: 1 }}>+</span> Agregar Nuevo Lugar
+    </button>
+  )}
 
 
     <section className={styles.attractionsSection}>
@@ -450,29 +463,31 @@ return (
           className={styles.attractionCard}
           style={{ cursor: 'pointer', position: 'relative' }}
         >
-          {/* Botón X para borrar */}
-          <button
-            style={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              background: '#e53e3e',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50%',
-              width: 28,
-              height: 28,
-              fontSize: '1.1rem',
-              cursor: 'pointer',
-              zIndex: 2,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-            }}
-            title="Eliminar atractivo"
-            onClick={(e) => {
-              e.stopPropagation();
-              setConfirmDelete({ show: true, id: attraction.id });
-            }}
-          >×</button>
+          {/* Botón X para borrar solo si es admin */}
+          {isAdmin && (
+            <button
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: '#e53e3e',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: 28,
+                height: 28,
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                zIndex: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+              }}
+              title="Eliminar atractivo"
+              onClick={(e) => {
+                e.stopPropagation();
+                setConfirmDelete({ show: true, id: attraction.id });
+              }}
+            >×</button>
+          )}
           <div className={styles.imageWrapper}>
             {attraction.image_url && (
               <Image

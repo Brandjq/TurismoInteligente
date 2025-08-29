@@ -6,6 +6,17 @@ export default async function HotelesPage() {
   const hoteles = await prisma.hotel.findMany();
   await prisma.$disconnect();
 
+  // Detecta si el usuario es admin desde la cookie de sesión
+  let isAdmin = false;
+  if (typeof window !== "undefined") {
+    const match = document.cookie.match(/session=([^;]+)/);
+    if (match) {
+      try {
+        const session = JSON.parse(decodeURIComponent(match[1]));
+        isAdmin = session.isAdmin === true;
+      } catch {}
+    }
+  }
   return (
     <div
       style={{
@@ -149,10 +160,12 @@ export default async function HotelesPage() {
         ))}
       </div>
 
-      {/* Botón flotante */}
-      <div className="add-hotel-btn" style={{ position: "fixed", bottom: 40, right: 40, zIndex: 3000 }}>
-        <AddHotelButton />
-      </div>
+      {/* Botón flotante solo para admin */}
+      {isAdmin && (
+        <div className="add-hotel-btn" style={{ position: "fixed", bottom: 40, right: 40, zIndex: 3000 }}>
+          <AddHotelButton />
+        </div>
+      )}
 
       {/* Animaciones y responsive */}
       <style>{`

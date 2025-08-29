@@ -1,8 +1,8 @@
-
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Estado para bloques de información agregados por el admin
 // (debe ir dentro del componente Home)
@@ -14,11 +14,11 @@ const lakeImages = [
   '/santiago-atitlan.jpg',
 ];
 export default function Home() {
+  const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingBlock, setPendingBlock] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
   const [newLink, setNewLink] = useState("");
-  // ...existing code...
   // Estado para bloques de información agregados por el admin
   const [infoBlocks, setInfoBlocks] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -31,8 +31,17 @@ export default function Home() {
   const [newText, setNewText] = useState("");
   const [newImage, setNewImage] = useState(null);
   const [showNotif, setShowNotif] = useState(false);
-  // Simulación de admin (cambiar a false para ocultar el editor)
-  const isAdmin = true;
+  // Detecta si el usuario es admin desde la cookie de sesión
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    const match = document.cookie.match(/session=([^;]+)/);
+    if (match) {
+      try {
+        const session = JSON.parse(decodeURIComponent(match[1]));
+        setIsAdmin(session.isAdmin === true);
+      } catch {}
+    }
+  }, []);
   const [current, setCurrent] = useState(0);
 
   // Cambia la imagen automáticamente cada 3 segundos
@@ -54,6 +63,16 @@ export default function Home() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // Redirige a /welcome si no hay sesión
+    if (typeof window !== 'undefined') {
+      const match = document.cookie.match(/session=([^;]+)/);
+      if (!match) {
+        router.replace('/welcome');
+      }
+    }
+  }, [router]);
 
   return (
     <main style={{
@@ -587,8 +606,8 @@ export default function Home() {
           </button>
         </Link>
       </div>
-      {/* Editor local solo para admin al final */}
-      {isAdmin && (
+  {/* Editor local solo para admin al final */}
+  {isAdmin && (
         <section style={{ background: "#f8fafc", borderRadius: 16, padding: 28, margin: "2.5rem auto 2rem auto", maxWidth: 900, boxShadow: "0 4px 24px #3182ce22" }}>
           <h2 style={{ fontSize: "1.5rem", color: "#2b6cb0", marginBottom: 18, fontWeight: 700, letterSpacing: 0.5 }}>Agregar información dinámica</h2>
           <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={e => {
@@ -702,3 +721,4 @@ export default function Home() {
     </main>
   );
 }
+

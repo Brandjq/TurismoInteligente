@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from 'react';
 import Image from 'next/image';
@@ -178,6 +177,11 @@ export default function LoginPage() {
         {error && (
           <div style={{ color: "#e53e3e", marginBottom: "1rem", fontWeight: 600 }}>{error}</div>
         )}
+        <div style={{ textAlign: 'center', marginBottom: 16 }}>
+          <a href="/recuperar-clave/formulario" style={{ color: '#007bff', textDecoration: 'underline' }}>
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
         <button
           type="submit"
           style={{

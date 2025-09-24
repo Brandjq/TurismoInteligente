@@ -69,6 +69,10 @@ export default function RegisterPage() {
           intereses,
         }),
       });
+      if (res.status === 303) {
+        window.location.href = "/login";
+        return;
+      }
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Error al registrar usuario");

@@ -36,7 +36,7 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  const hideNavbarRoutes = ['/recuperar-clave', '/recuperar-clave/formulario', '/login', '/cambiar-contraseña'];
+  const hideNavbarRoutes = ['/recuperar-clave', '/login', '/cambiar-contraseña'];
   const hideNavbar = hideNavbarRoutes.includes(pathname);
   // Responsive navbar state
   const [menuOpen, setMenuOpen] = useState(false);

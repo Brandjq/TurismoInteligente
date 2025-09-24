@@ -69,16 +69,12 @@ export default function RegisterPage() {
           intereses,
         }),
       });
-      if (res.status === 303) {
-        window.location.href = "/login";
-        return;
-      }
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Error al registrar usuario");
+      // No redirección ni pantalla especial, solo mensaje
+      if (res.ok) {
+        setSuccess("Usuario registrado con éxito");
       } else {
-        setSuccess("");
-        setShowWelcome(true);
+        const data = await res.json();
+        setError(data.error || "Error al registrar usuario");
       }
     } catch (err) {
       setError("Error de red o servidor");
@@ -88,19 +84,19 @@ export default function RegisterPage() {
   return (
     <main style={{maxWidth:'480px',margin:'3rem auto',padding:'2rem',background:'linear-gradient(135deg,#e0f7fa 0%,#fff 100%)',borderRadius:'24px',boxShadow:'0 4px 32px rgba(0,0,0,0.10)'}}>
       {error && <div style={{color:'#e53e3e',marginBottom:'1rem',fontWeight:600}}>{error}</div>}
-      {showWelcome ? (
+      {success && (
         <div style={{textAlign:'center',padding:'2rem 1rem'}}>
           <img src="/logo.jpg" alt="Logo" style={{width:'120px',height:'120px',borderRadius:'50%',margin:'0 auto 1.2rem',boxShadow:'0 2px 12px #3182ce22'}} />
-          <h2 style={{fontSize:'2rem',fontWeight:800,color:'#234e70',marginBottom:'1.2rem'}}>¡Bienvenido al sistema!</h2>
-          <p style={{fontSize:'1.15rem',color:'#234e70',marginBottom:'1.2rem'}}>Tu registro fue exitoso. Ya puedes iniciar sesión y explorar el sistema de turismo inteligente Sololá.</p>
+          <h2 style={{fontSize:'2rem',fontWeight:800,color:'#234e70',marginBottom:'1.2rem'}}>Usuario registrado con éxito</h2>
           <button
             style={{background:'linear-gradient(90deg,#3182ce 60%,#38b2ac 100%)',color:'#fff',padding:'0.8rem 1.5rem',borderRadius:'8px',fontWeight:700,fontSize:'1.1rem',border:'none',marginTop:'0.7rem',cursor:'pointer'}}
-            onClick={() => window.location.href = "/login"}
+            onClick={() => window.location.href = "/"}
           >
-            Ir al login
+            Inicio
           </button>
         </div>
-      ) : (
+      )}
+      {!success && (
         <>
           <h2 style={{fontSize:'2rem',fontWeight:800,color:'#234e70',marginBottom:'1.2rem'}}>Registro de usuario</h2>
           <form onSubmit={handleSubmit}>

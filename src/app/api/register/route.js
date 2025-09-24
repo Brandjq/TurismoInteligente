@@ -69,12 +69,9 @@ export async function POST(request) {
     return new Response(JSON.stringify({ error: 'Usuario creado pero error al enviar correo', details: err.message }), { status: 500 });
   }
 
-  return new Response(JSON.stringify({ message: 'Usuario registrado y correo enviado', user: { id: user.id, name: user.name, email: user.email } }), { status: 201 });
-}
-  } catch (err) {
-    console.error('Error al enviar el correo:', err);
-    return new Response(JSON.stringify({ error: 'Usuario creado pero error al enviar correo', details: err.message }), { status: 500 });
-  }
-
-  return new Response(JSON.stringify({ message: 'Usuario registrado y correo enviado', user: { id: user.id, name: user.name, email: user.email } }), { status: 201 });
+  // Redirige automáticamente al login si todo fue exitoso
+  return new Response(null, {
+    status: 303,
+    headers: { Location: '/login' }
+  });
 }

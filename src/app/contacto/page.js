@@ -2,6 +2,7 @@
 
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Reseñas() {
   const [reseñas, setReseñas] = useState([]);
@@ -11,11 +12,21 @@ export default function Reseñas() {
   const [calificacion, setCalificacion] = useState(5);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/reviews')
       .then(res => res.json())
       .then(data => setReseñas(data));
+
+    const match = document.cookie.match(/session=([^;]+)/);
+    if (match) {
+      try {
+        const session = JSON.parse(decodeURIComponent(match[1]));
+        setIsAdmin(session.isAdmin === true);
+      } catch {}
+    }
   }, []);
 
   const handleSubmit = async (e) => {
@@ -44,6 +55,25 @@ export default function Reseñas() {
 
   return (
     <div style={styles.container}>
+      {isAdmin && (
+        <button
+          style={{ 
+            backgroundColor: '#22c55e', 
+            color: '#fff', 
+            border: 'none', 
+            borderRadius: '6px', 
+            padding: '0.75rem 1.5rem', 
+            fontSize: '1rem', 
+            fontWeight: '700', 
+            cursor: 'pointer', 
+            marginBottom: '1.5rem',
+            transition: 'background 0.2s'
+          }}
+          onClick={() => router.push('/reviews/stats')}
+        >
+          Reporte
+        </button>
+      )}
       {showModal && (
         <div style={styles.modal}>
           <div style={styles.modalContent}>

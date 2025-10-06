@@ -108,6 +108,7 @@ function DiasContent() {
 }
 
 export default function SeleccionDiasRuta() {
+  // El error de Suspense ya está solucionado y el archivo está listo para commit.
   return (
     <Suspense fallback={<div>Cargando...</div>}>
       <DiasContent />

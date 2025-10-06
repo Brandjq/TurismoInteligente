@@ -1,5 +1,5 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
@@ -25,7 +25,7 @@ const activityKeywords = {
 
 const restaurantKeywords = ['restaurante', 'comida', 'café', 'desayuno', 'almuerzo', 'cena'];
 
-export default function ItinerarioRuta() {
+function ItinerarioContent() {
   const searchParams = useSearchParams();
   const actividadesRaw = searchParams.get('actividades') || '';
   const diasRaw = searchParams.get('dias') || '1';
@@ -336,6 +336,14 @@ export default function ItinerarioRuta() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ItinerarioPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <ItinerarioContent />
+    </Suspense>
   );
 }
 

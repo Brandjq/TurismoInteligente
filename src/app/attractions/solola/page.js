@@ -459,7 +459,11 @@ return (
     <section className={styles.attractionsSection}>
       {attractions.map((attraction, index) => (
         <div
-          key={attraction.id || index}
+          key={
+            attraction.id
+              ? `attraction-${attraction.id}-${index}` // Combina id e índice para asegurar unicidad
+              : `attraction-${index}`
+          }
           className={styles.attractionCard}
           style={{ cursor: 'pointer', position: 'relative' }}
         >

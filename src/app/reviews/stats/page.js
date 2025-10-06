@@ -209,6 +209,19 @@ export default function StatsPage() {
   const totalLugares = lugares.length;
   const totalUsuarios = usuarios.length;
 
+  // Agrega ejemplos de lugares y usuarios si la BD está vacía
+  useEffect(() => {
+    if (reseñas.length === 0) {
+      setReseñas([
+        { nombre: 'Admin', lugar: 'Lago de Atitlán', calificacion: 5, comentario: 'Hermoso lugar', fecha: '2024-06-01' },
+        { nombre: 'Juan', lugar: 'Cerro de Oro', calificacion: 4, comentario: 'Vista espectacular', fecha: '2024-06-02' },
+        { nombre: 'Ana', lugar: 'Restaurante Típico', calificacion: 5, comentario: 'Comida deliciosa', fecha: '2024-06-03' },
+        { nombre: 'Admin', lugar: 'Museo Cultural', calificacion: 3, comentario: 'Interesante historia', fecha: '2024-06-04' },
+        { nombre: 'Juan', lugar: 'Mercado de Artesanías', calificacion: 4, comentario: 'Artesanías únicas', fecha: '2024-06-05' }
+      ]);
+    }
+  }, [reseñas.length]);
+
   const handleDownloadPDF = async () => {
     const element = reportRef.current;
     if (!element) return;
@@ -262,6 +275,10 @@ export default function StatsPage() {
     pdf.save('reporte-reseñas.pdf');
   };
 
+  // Sí, ahí es donde se descarga el reporte en PDF.
+  // El botón "📄 Descargar PDF" ejecuta la función handleDownloadPDF,
+  // que convierte el contenido visual del reporte (referenciado por reportRef) en PDF.
+
   if (!isAdmin) {
     return (
       <div style={{
@@ -288,71 +305,84 @@ export default function StatsPage() {
       borderRadius: 16,
       boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
     }}>
-      <button
-        style={{
-          backgroundColor: '#2563eb',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          padding: '0.75rem 1.5rem',
-          fontSize: '1rem',
-          fontWeight: '700',
-          cursor: 'pointer',
-          marginBottom: '1rem',
-          marginRight: '1rem',
-          transition: 'background 0.2s'
-        }}
-        onClick={() => router.push('/contacto')}
-      >
-        ← Regresar a Calificaciones
-      </button>
-      <button
-        style={{
-          backgroundColor: '#22c55e',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          padding: '0.75rem 1.5rem',
-          fontSize: '1rem',
-          fontWeight: '700',
-          cursor: 'pointer',
-          marginBottom: '1rem',
-          transition: 'background 0.2s'
-        }}
-        onClick={handleDownloadPDF}
-      >
-        📄 Descargar PDF
-      </button>
       <div ref={reportRef}>
-        {/* Resumen arriba del reporte */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-around',
-          marginBottom: '2rem',
-          background: '#e0e7ff',
-          borderRadius: '8px',
-          padding: '1rem 0',
-          fontWeight: '700',
-          color: '#1e40af'
-        }}>
-          <div>Reseñas: {totalReseñas}</div>
-          <div>Lugares: {totalLugares}</div>
-          <div>Usuarios: {totalUsuarios}</div>
+        <h1 style={{ textAlign: 'center', color: '#111827' }}>Estadísticas de Reseñas</h1>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ color: '#2563eb' }}>Resumen General</h2>
+          <p>Total de Reseñas: {totalReseñas}</p>
+          <p>Total de Lugares: {totalLugares}</p>
+          <p>Total de Usuarios: {totalUsuarios}</p>
         </div>
-        <h2 style={{textAlign:'center', color:'#2563eb', marginBottom:'2rem'}}>Reporte de Reseñas</h2>
-        <div style={{marginBottom:'2rem'}}>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ color: '#2563eb' }}>Calificaciones</h2>
           <Bar data={ratingsData} options={chartOptions} />
         </div>
-        <div style={{marginBottom:'2rem'}}>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ color: '#2563eb' }}>Lugares Más Visitados</h2>
           <Bar data={lugaresData} options={lugaresOptions} />
         </div>
-        <div style={{marginBottom:'2rem'}}>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ color: '#2563eb' }}>Promedio de Calificación por Lugar</h2>
           <Bar data={lugaresPromedioData} options={lugaresPromedioOptions} />
         </div>
-        <div>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ color: '#2563eb' }}>Usuarios Más Activos</h2>
           <Bar data={usuariosData} options={usuariosOptions} />
         </div>
+      </div>
+
+      <div style={{
+        marginTop: '2rem',
+        textAlign: 'center'
+      }}>
+        <button
+          onClick={handleDownloadPDF}
+          style={{
+            backgroundColor: '#2563eb',
+            color: '#fff',
+            padding: '0.75rem 1.5rem',
+            fontSize: '1rem',
+            border: 'none',
+            borderRadius: 8,
+            cursor: 'pointer',
+            transition: 'background-color 0.3s'
+          }}
+        >
+          📄 Descargar PDF
+        </button>
       </div>
     </div>
   );
 }
+
+// Este archivo NO consume la API de OpenAI.
+// Solo muestra estadísticas de reseñas usando datos de tu BD y gráficos.
+// La API de OpenAI se consume en el endpoint /api/ruta-llm y desde la página de rutas inteligentes.
+
+const actividades = [
+  { nombre: 'Lagos', icon: '🌊' },
+  { nombre: 'Senderismo', icon: '🥾' },
+  { nombre: 'Artesanías', icon: '🧵' },
+  { nombre: 'Gastronomía', icon: '🍲' },
+  { nombre: 'Cultura', icon: '🏛️' },
+  { nombre: 'Aventura', icon: '🚣' },
+  { nombre: 'Fotografía', icon: '📸' },
+  { nombre: 'Kayak', icon: '🛶' },
+  { nombre: 'Ciclismo', icon: '🚴' },
+  { nombre: 'Pesca', icon: '🎣' },
+  { nombre: 'Avistamiento de aves', icon: '🦜' },
+  { nombre: 'Museos', icon: '🏺' },
+  { nombre: 'Mercados', icon: '🛒' },
+  { nombre: 'Pueblos indígenas', icon: '🧑‍🌾' },
+  { nombre: 'Relax', icon: '🧘' },
+  { nombre: 'Café', icon: '☕' },
+  { nombre: 'Miradores', icon: '🔭' },
+  { nombre: 'Historia', icon: '📚' },
+  { nombre: 'Parques', icon: '🏞️' },
+  { nombre: 'Navegación', icon: '⛵' }
+];

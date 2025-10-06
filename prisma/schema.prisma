@@ -20,9 +20,8 @@ model Recomendacion {
 }
 
 model Actividad {
-  id          Int     @id @default(autoincrement())
-  nombre      String  @unique
-  descripcion String?
+  id        Int    @id @default(autoincrement())
+  nombre    String
 }
 
 model attractions {
@@ -42,7 +41,6 @@ model Hotel {
   imagen    String
 }
 
-
 model Review {
   id          Int      @id @default(autoincrement())
   nombre      String
@@ -57,4 +55,24 @@ model User {
   email     String @unique
   password  String
   isAdmin   Boolean @default(false)
+}
+
+model Lugar {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  categoria   String
+  actividades String[]
+  latitud     Float
+  longitud    Float
+  tiempo      Int
+  distancia   Float
+  imagen      String?
+}
+
+model RutaFavorita {
+  id        Int    @id @default(autoincrement())
+  usuarioId Int
+  nombre    String
+  lugares   String
 }

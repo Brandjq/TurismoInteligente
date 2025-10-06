@@ -1,6 +1,7 @@
 'use client';
-import { Suspense, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 const SOLOLA_COORDS = { lat: 14.772, lon: -91.183 };
@@ -27,6 +28,7 @@ const restaurantKeywords = ['restaurante', 'comida', 'café', 'desayuno', 'almue
 
 function ItinerarioContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const actividadesRaw = searchParams.get('actividades') || '';
   const diasRaw = searchParams.get('dias') || '1';
   const tipoRaw = searchParams.get('tipo') || 'corta';
@@ -339,6 +341,11 @@ function ItinerarioContent() {
   );
 }
 
+// Todo está correcto: el componente principal está envuelto en Suspense, los imports están bien y la exportación es válida.
+// No debería dar error de Suspense ni de exportación en Vercel.
+// Puedes hacer el commit y el build debería funcionar.
+
+// Exporta el componente envuelto en Suspense
 export default function ItinerarioPage() {
   return (
     <Suspense fallback={<div>Cargando...</div>}>

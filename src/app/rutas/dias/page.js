@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SeleccionDiasRuta() {
+function DiasContent() {
   const [dias, setDias] = useState(1);
   const [tipoRuta, setTipoRuta] = useState('corta');
   const router = useRouter();
@@ -104,5 +104,13 @@ export default function SeleccionDiasRuta() {
         Siguiente
       </button>
     </div>
+  );
+}
+
+export default function SeleccionDiasRuta() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <DiasContent />
+    </Suspense>
   );
 }

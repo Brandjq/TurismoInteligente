@@ -11,7 +11,7 @@ export async function POST(request) {
   } else if (body.actividades) {
     promptText = `
 Eres un asistente turístico experto en Sololá, Guatemala. El usuario quiere un itinerario inteligente solo en Sololá, basado en estas actividades favoritas: ${Array.isArray(body.actividades) ? body.actividades.join(', ') : ''}.
-Genera un itinerario para ${body.dias || 1} días, asignando al menos una actividad por día según las actividades seleccionadas. Para cada actividad, incluye el link de Google Maps del lugar (campo "mapa", debe ser el link largo real, por ejemplo: https://www.google.com/maps/place/NOMBRE_DEL_LUGAR o https://www.google.com/maps?q=LAT,LONG). No uses links cortos ni dinámicos. Para cada día, incluye lugares reales, actividades, tiempos estimados, distancias, recomendaciones de comida y cómo llegar (lancha, carro, etc). Devuelve el resultado en formato JSON así:
+Genera un itinerario para ${body.dias || 1} días, asignando por día al menos 2 a 3 actividades diferentes (si es solo 1 día, incluye al menos 3 actividades o más). Para cada actividad, incluye el link de Google Maps del lugar (campo "mapa", debe ser el link largo real, por ejemplo: https://www.google.com/maps/place/NOMBRE_DEL_LUGAR o https://www.google.com/maps?q=LAT,LONG). No uses links cortos ni dinámicos. Para cada día, incluye lugares reales, actividades, tiempos estimados, distancias, recomendaciones de comida y cómo llegar (lancha, carro, etc). Devuelve el resultado en formato JSON así:
 {
   "itinerario": [
     {

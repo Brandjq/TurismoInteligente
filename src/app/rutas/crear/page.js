@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const actividades = [
@@ -27,9 +27,10 @@ const actividades = [
 
 export default function CrearRuta() {
   const [seleccionadas, setSeleccionadas] = useState([]);
-  const [dias, setDias] = useState(1);
+  const [dias, setDias] = useState(0); // inicia en 0
   const [itinerario, setItinerario] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showConfirmRegenerar, setShowConfirmRegenerar] = useState(false);
   const router = useRouter();
 
   const toggleActividad = (nombre) => {
@@ -65,6 +66,24 @@ export default function CrearRuta() {
     setLoading(false);
   };
 
+  // Nuevo: para guardar el itinerario y navegar a la página de itinerario final
+  const handleAceptarRuta = () => {
+    // Guarda el itinerario en localStorage para pasarlo a la otra página
+    localStorage.setItem('itinerario_final', JSON.stringify(itinerario));
+    // Guarda el usuario actual (si tienes lógica de usuario, aquí puedes obtenerlo)
+    const match = document.cookie.match(/session=([^;]+)/);
+    let usuario = 'Usuario';
+    if (match) {
+      try {
+        const session = JSON.parse(decodeURIComponent(match[1]));
+        usuario = session.nombre || 'Usuario';
+      } catch {}
+    }
+    localStorage.setItem('usuario_nombre', usuario);
+    // Redirige a la página final
+    router.push('/rutas/itinerario-final');
+  };
+
   return (
     <div style={{
       maxWidth: 600,
@@ -75,6 +94,54 @@ export default function CrearRuta() {
       boxShadow: '0 4px 24px rgba(52,152,219,0.12)',
       textAlign: 'center'
     }}>
+      {/* Carrusel animado tipo cinta */}
+      <div style={{
+        width: '100%',
+        overflow: 'hidden',
+        marginBottom: '2.5rem',
+        padding: '0.5rem 0',
+        position: 'relative'
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '2vw',
+            alignItems: 'center',
+            width: 'max-content',
+            animation: 'carousel-move 32s linear infinite'
+          }}
+        >
+          {[
+  '/mirador-atitlan.jpg',
+  '/cerro.jpg',
+  '/azul.jpg',
+  '/lacustre.jpg',
+  '/mapa.jpg',
+  '/nahuala.jpg',
+].map((img, idx) => (
+  <img
+    key={img}
+    src={img}
+    alt={`Ruta turística ${idx + 1}`}
+    style={{
+      width: '220px',
+      height: '140px',
+      objectFit: 'cover',
+      borderRadius: '2rem',
+      boxShadow: '0 4px 24px #2563eb22',
+      background: '#fff',
+    }}
+  />
+))}
+
+        </div>
+        <style>{`
+          @keyframes carousel-move {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-40vw); }
+          }
+        `}</style>
+      </div>
       <h2 style={{
         fontSize: '2rem',
         color: '#2563eb',
@@ -83,6 +150,29 @@ export default function CrearRuta() {
       }}>
         ¿Cuáles son tus actividades favoritas?
       </h2>
+      <div style={{
+        maxWidth: 540,
+        margin: '0 auto 1.5rem auto',
+        color: '#1e293b',
+        fontSize: '1.13rem',
+        background: 'linear-gradient(90deg,#e0e7ff 60%,#f0fdfa 100%)',
+        borderRadius: '14px',
+        padding: '1.3rem 1.4rem',
+        boxShadow: '0 2px 12px #2563eb18',
+        textAlign: 'center',
+        fontWeight: 500,
+        border: '1.5px solid #22c55e'
+      }}>
+        <span>
+          <span style={{fontWeight:'bold', color:'#2563eb', fontSize:'1.15rem'}}>Instrucciones:</span><br />
+          <span style={{color:'#334155'}}>
+            Selecciona tus <b style={{color:'#22c55e'}}>actividades favoritas</b> y te generaremos una <b style={{color:'#22c55e'}}>ruta inteligente y personalizada</b> en Sololá.<br />
+            <span style={{display:'inline-block', marginTop:'0.6rem', color:'#f59e42', fontWeight:'bold'}}>
+              🛈 Recomendación: <span style={{fontWeight:'normal', color:'#b45309'}}>Mientras más actividades selecciones, más completo y variado será tu itinerario.</span>
+            </span>
+          </span>
+        </span>
+      </div>
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
@@ -146,7 +236,7 @@ export default function CrearRuta() {
           boxShadow: '0 2px 12px #2563eb22'
         }}>
           <button
-            onClick={() => setDias(d => Math.max(1, d - 1))}
+            onClick={() => setDias(d => Math.max(0, d - 1))}
             style={{
               background: '#2563eb',
               color: '#fff',
@@ -155,11 +245,11 @@ export default function CrearRuta() {
               width: '2.5rem',
               height: '2.5rem',
               fontSize: '1.5rem',
-              cursor: dias === 1 ? 'not-allowed' : 'pointer',
-              opacity: dias === 1 ? 0.5 : 1,
+              cursor: dias === 0 ? 'not-allowed' : 'pointer',
+              opacity: dias === 0 ? 0.5 : 1,
               transition: 'background 0.2s'
             }}
-            disabled={dias === 1}
+            disabled={dias === 0}
             aria-label="Restar día"
           >&#8592;</button>
           <span style={{
@@ -170,7 +260,7 @@ export default function CrearRuta() {
             textAlign: 'center'
           }}>{dias}</span>
           <button
-            onClick={() => setDias(d => Math.min(12, d + 1))}
+            onClick={() => setDias(d => Math.min(20, d + 1))}
             style={{
               background: '#22c55e',
               color: '#fff',
@@ -179,18 +269,18 @@ export default function CrearRuta() {
               width: '2.5rem',
               height: '2.5rem',
               fontSize: '1.5rem',
-              cursor: dias === 12 ? 'not-allowed' : 'pointer',
-              opacity: dias === 12 ? 0.5 : 1,
+              cursor: dias === 20 ? 'not-allowed' : 'pointer',
+              opacity: dias === 20 ? 0.5 : 1,
               transition: 'background 0.2s'
             }}
-            disabled={dias === 12}
+            disabled={dias === 20}
             aria-label="Sumar día"
           >&#8594;</button>
         </div>
       </div>
       <button
         onClick={handleSiguiente}
-        disabled={seleccionadas.length === 0 || loading}
+        disabled={seleccionadas.length < 3 || dias === 0 || loading}
         style={{
           background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
           color: '#fff',
@@ -199,7 +289,7 @@ export default function CrearRuta() {
           border: 'none',
           borderRadius: '10px',
           padding: '0.8rem 2.2rem',
-          cursor: seleccionadas.length === 0 || loading ? 'not-allowed' : 'pointer',
+          cursor: seleccionadas.length < 3 || dias === 0 || loading ? 'not-allowed' : 'pointer',
           boxShadow: '0 2px 12px #2563eb22',
           transition: 'background 0.2s'
         }}
@@ -375,15 +465,114 @@ export default function CrearRuta() {
               <pre style={{whiteSpace:'pre-wrap', wordBreak:'break-word'}}>{itinerario}</pre>
             </div>
           )}
+          {/* Botones de aceptar y regenerar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '2rem',
+            marginTop: '2.5rem'
+          }}>
+            <button
+              style={{
+                background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: '1.15rem',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0.8rem 2.2rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 12px #2563eb22',
+                transition: 'background 0.2s'
+              }}
+              onClick={handleAceptarRuta}
+            >
+              ✅ Aceptar ruta
+            </button>
+            <button
+              style={{
+                background: 'linear-gradient(90deg,#e11d48 0%,#fbbf24 100%)',
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: '1.15rem',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0.8rem 2.2rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 12px #e11d4822',
+                transition: 'background 0.2s'
+              }}
+              onClick={() => setShowConfirmRegenerar(true)}
+            >
+              🔄 Regenerar otra ruta
+            </button>
+          </div>
+          {/* Modal de confirmación para regenerar */}
+          {showConfirmRegenerar && (
+            <div style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(30,41,59,0.25)',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{
+                background: '#fff',
+                borderRadius: '18px',
+                boxShadow: '0 8px 40px #2563eb33',
+                padding: '2.5rem 2.2rem',
+                minWidth: '320px',
+                textAlign: 'center',
+                border: '2px solid #22c55e'
+              }}>
+                <div style={{fontSize:'2.2rem', marginBottom:'1rem'}}>❓</div>
+                <div style={{fontWeight:'bold', color:'#2563eb', fontSize:'1.18rem', marginBottom:'1.2rem'}}>
+                  ¿Estás seguro que quieres regenerar otra ruta?
+                </div>
+                <div style={{display:'flex', justifyContent:'center', gap:'1.5rem'}}>
+                  <button
+                    style={{
+                      background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      fontSize: '1.1rem',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.7rem 1.7rem',
+                      cursor: 'pointer'
+                    }}
+                    onClick={async () => {
+                      setShowConfirmRegenerar(false);
+                      setLoading(true);
+                      setItinerario(null);
+                      await handleSiguiente();
+                    }}
+                  >
+                    Sí, regenerar
+                  </button>
+                  <button
+                    style={{
+                      background: '#e11d48',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      fontSize: '1.1rem',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.7rem 1.7rem',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setShowConfirmRegenerar(false)}
+                  >
+                    No, cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
-
-// Sí, aquí es donde el usuario selecciona sus actividades favoritas y al dar "Siguiente"
-// se muestra el itinerario inteligente generado por el modelo GPT-4o para Sololá.
-   
-// Sí, aquí es donde el usuario selecciona sus actividades favoritas y al dar "Siguiente"
-// se muestra el itinerario inteligente generado por el modelo GPT-4o para Sololá.
-

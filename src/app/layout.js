@@ -171,6 +171,29 @@ export default function RootLayout({ children }) {
                             </button>
                             <button
                               style={{
+                                background: '#f7fafc',
+                                color: '#234e70',
+                                border: 'none',
+                                borderRadius: '8px',
+                                padding: '0.6rem 1.2rem',
+                                fontWeight: 700,
+                                fontSize: '1rem',
+                                cursor: 'pointer',
+                                width: '100%',
+                                marginBottom: '0.7rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.7rem',
+                              }}
+                              onClick={() => {
+                                window.location.href = '/favoritos';
+                              }}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                              Favoritos
+                            </button>
+                            <button
+                              style={{
                                 background: 'linear-gradient(90deg, #3182ce 60%, #38b2ac 100%)',
                                 color: '#fff',
                                 border: 'none',
@@ -245,29 +268,52 @@ export default function RootLayout({ children }) {
                           fontWeight: 600,
                           fontSize: '1rem',
                         }}>
-                            <button
-                              style={{
-                                background: '#f7fafc',
-                                color: '#234e70',
-                                border: 'none',
-                                borderRadius: '8px',
-                                padding: '0.6rem 1.2rem',
-                                fontWeight: 700,
-                                fontSize: '1rem',
-                                cursor: 'pointer',
-                                width: '100%',
-                                marginBottom: '0.7rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.7rem',
-                              }}
-                              onClick={() => {
-                                window.location.href = '/configuraciones';
-                              }}
-                            >
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09c.7 0 1.31-.4 1.51-1a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09c.7 0 1.31-.4 1.51-1V3a2 2 0 0 1 4 0v.09c0 .7.4 1.31 1 1.51a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09c0 .7.4 1.31 1 1.51H21a2 2 0 0 1 0 4h-.09c-.7 0-1.31.4-1.51 1z"/></svg>
-                              Configuraciones
-                            </button>
+                          <button
+                            style={{
+                              background: '#f7fafc',
+                              color: '#234e70',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '0.6rem 1.2rem',
+                              fontWeight: 700,
+                              fontSize: '1rem',
+                              cursor: 'pointer',
+                              width: '100%',
+                              marginBottom: '0.7rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.7rem',
+                            }}
+                            onClick={() => {
+                              window.location.href = '/configuraciones';
+                            }}
+                          >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09c.7 0 1.31-.4 1.51-1a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09c.7 0 1.31-.4 1.51-1V3a2 2 0 0 1 4 0v.09c0 .7.4 1.31 1 1.51a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09c0 .7.4 1.31 1 1.51H21a2 2 0 0 1 0 4h-.09c-.7 0-1.31.4-1.51 1z"/></svg>
+                            Configuraciones
+                          </button>
+                          <button
+                            style={{
+                              background: '#f7fafc',
+                              color: '#234e70',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '0.6rem 1.2rem',
+                              fontWeight: 700,
+                              fontSize: '1rem',
+                              cursor: 'pointer',
+                              width: '100%',
+                              marginBottom: '0.7rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.7rem',
+                            }}
+                            onClick={() => {
+                              window.location.href = '/favoritos';
+                            }}
+                          >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            Favoritos
+                          </button>
                           <button
                             style={{
                               background: 'linear-gradient(90deg, #3182ce 60%, #38b2ac 100%)',

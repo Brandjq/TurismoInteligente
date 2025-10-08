@@ -66,22 +66,63 @@ export default function CrearRuta() {
     setLoading(false);
   };
 
-  // Nuevo: para guardar el itinerario y navegar a la página de itinerario final
-  const handleAceptarRuta = () => {
-    // Guarda el itinerario en localStorage para pasarlo a la otra página
-    localStorage.setItem('itinerario_final', JSON.stringify(itinerario));
-    // Guarda el usuario actual (si tienes lógica de usuario, aquí puedes obtenerlo)
-    const match = document.cookie.match(/session=([^;]+)/);
-    let usuario = 'Usuario';
-    if (match) {
-      try {
-        const session = JSON.parse(decodeURIComponent(match[1]));
-        usuario = session.nombre || 'Usuario';
-      } catch {}
+  // Reemplaza tu handleAceptarRuta por esta versión para guardar en BD y en localStorage
+  const handleAceptarRuta = async () => {
+    // Obtener usuarioId
+    let usuarioId = null;
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/session=([^;]+)/);
+      if (match) {
+        try {
+          const session = JSON.parse(decodeURIComponent(match[1]));
+          if (session.id) usuarioId = session.id;
+        } catch {}
+      }
+      if (!usuarioId) {
+        const idLocal = localStorage.getItem('usuario_id');
+        if (idLocal) usuarioId = parseInt(idLocal, 10);
+      }
     }
-    localStorage.setItem('usuario_nombre', usuario);
-    // Redirige a la página final
-    router.push('/rutas/itinerario-final');
+    if (!usuarioId) {
+      alert("No hay usuario autenticado");
+      return;
+    }
+    if (!itinerario || !Array.isArray(itinerario) || itinerario.length === 0) {
+      alert("No hay itinerario generado.");
+      return;
+    }
+    try {
+      // Guarda en la BD
+      const res = await fetch('/api/rutas-generadas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuarioId,
+          nombre: 'Ruta generada',
+          itinerario
+        })
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        alert("Error al guardar en la BD: " + (error.error || res.status));
+        return;
+      }
+      // Guarda en localStorage
+      let rutasLocal = [];
+      const local = localStorage.getItem('rutas_generadas');
+      if (local) rutasLocal = JSON.parse(local);
+      rutasLocal.push({
+        usuarioId,
+        nombre: 'Ruta generada',
+        itinerario,
+        creadoEn: new Date().toISOString()
+      });
+      localStorage.setItem('rutas_generadas', JSON.stringify(rutasLocal));
+      // Redirige a la página final del itinerario (como antes)
+      router.push('/rutas/itinerario-final');
+    } catch (err) {
+      alert("Error de red o del servidor");
+    }
   };
 
   return (

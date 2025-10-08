@@ -1,17 +1,83 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export default function FavoritosPage() {
   const [favoritos, setFavoritos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [itinerarioSeleccionado, setItinerarioSeleccionado] = useState(null);
 
   useEffect(() => {
-    const favs = JSON.parse(localStorage.getItem('itinerarios_favoritos') || '[]');
-    setFavoritos(favs);
+    async function fetchFavoritos() {
+      setLoading(true);
+      try {
+        // Obtener usuarioId de la cookie o localStorage
+        let usuarioId = null;
+        if (typeof document !== "undefined") {
+          const match = document.cookie.match(/session=([^;]+)/);
+          if (match) {
+            try {
+              const session = JSON.parse(decodeURIComponent(match[1]));
+              if (session.id) usuarioId = session.id;
+            } catch {}
+          }
+          if (!usuarioId) {
+            const idLocal = localStorage.getItem('usuario_id');
+            if (idLocal) usuarioId = parseInt(idLocal, 10);
+          }
+        }
+        // Llama a la API con el usuarioId
+        let url = '/api/favoritos';
+        if (usuarioId) url += `?usuarioId=${usuarioId}`;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          // Si la respuesta es un array directo (por ejemplo, [{...}]), ajusta aquí:
+          if (Array.isArray(data)) {
+            setFavoritos(data);
+          } else {
+            setFavoritos(data.favoritos || []);
+          }
+        } else {
+          // fallback localStorage
+          const local = localStorage.getItem('itinerarios_favoritos');
+          setFavoritos(local ? JSON.parse(local) : []);
+        }
+      } catch {
+        const local = localStorage.getItem('itinerarios_favoritos');
+        setFavoritos(local ? JSON.parse(local) : []);
+      }
+      setLoading(false);
+    }
+    fetchFavoritos();
   }, []);
 
+  // Eliminar favorito (tanto en BD como en local)
+  const handleEliminarFavorito = async (favId, idx) => {
+    // Eliminar en BD si tiene id
+    if (favId) {
+      await fetch(`/api/favoritos/${favId}`, { method: 'DELETE' });
+    }
+    // Eliminar en localStorage (por si acaso)
+    const local = localStorage.getItem('itinerarios_favoritos');
+    if (local) {
+      let arr = JSON.parse(local);
+      arr.splice(idx, 1);
+      localStorage.setItem('itinerarios_favoritos', JSON.stringify(arr));
+    }
+    // Actualizar en front
+    setFavoritos(favoritos.filter((_, i) => i !== idx));
+  };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+        <span style={{ fontSize: '1.5rem', color: '#2563eb' }}>🔄</span>
+        <p style={{ color: '#475569', fontSize: '1.2rem' }}>Cargando favoritos...</p>
+      </div>
+    );
+  }
+
   if (itinerarioSeleccionado) {
-    // Mostrar el itinerario seleccionado en detalle
     return (
       <div style={{
         maxWidth: 900,
@@ -25,7 +91,6 @@ export default function FavoritosPage() {
         <button
           onClick={() => setItinerarioSeleccionado(null)}
           style={{
-            marginBottom: '2rem',
             background: '#2563eb',
             color: '#fff',
             border: 'none',
@@ -33,16 +98,16 @@ export default function FavoritosPage() {
             padding: '0.7rem 1.5rem',
             fontWeight: 'bold',
             fontSize: '1.1rem',
+            marginBottom: '2rem',
             cursor: 'pointer'
           }}
         >
           ← Volver a favoritos
         </button>
-        <h2 style={{color:'#22c55e', fontSize:'2.2rem', marginBottom:'2rem'}}>Itinerario Favorito</h2>
         {Array.isArray(itinerarioSeleccionado) ? (
           itinerarioSeleccionado.map((dia, idx) => (
             <section key={idx} style={{
-              marginBottom: '3.5rem',
+              marginBottom: '2.5rem',
               padding: '2.2rem 2rem',
               background: idx % 2 === 0 ? '#f8fafc' : '#e0e7ff',
               borderRadius: '18px',
@@ -144,44 +209,100 @@ export default function FavoritosPage() {
     );
   }
 
+  if (favoritos.length === 0) {
+    return (
+      <div style={{
+        maxWidth: 700,
+        margin: '3rem auto',
+        padding: '2.5rem 1.5rem',
+        background: '#f8fafc',
+        borderRadius: '18px',
+        boxShadow: '0 4px 16px #2563eb22',
+        fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif",
+        textAlign: 'center'
+      }}>
+        <h1 style={{ color: '#2563eb', fontSize: '2.2rem', marginBottom: '1.5rem' }}>Tus rutas favoritas</h1>
+        <p style={{ color: '#64748b', fontSize: '1.15rem', marginBottom: '2rem' }}>
+          No tienes rutas guardadas como favoritas.
+        </p>
+        <a
+          href="/"
+          style={{
+            display: 'inline-block',
+            padding: '0.7rem 1.5rem',
+            background: '#2563eb',
+            color: '#fff',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            textDecoration: 'none',
+            boxShadow: '0 4px 16px rgba(37,99,235,0.3)',
+          }}
+        >
+          Explorar rutas
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div style={{
-      maxWidth: 700,
+      maxWidth: 900,
       margin: '3rem auto',
-      padding: '2.5rem 1.5rem',
-      background: '#f8fafc',
-      borderRadius: '18px',
-      boxShadow: '0 4px 16px #2563eb22',
+      padding: '3rem 2.5rem',
+      background: 'linear-gradient(120deg,#e0e7ff 60%,#fff 100%)',
+      borderRadius: '28px',
+      boxShadow: '0 8px 40px rgba(52,152,219,0.15)',
       fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif"
     }}>
       <h1 style={{color:'#2563eb', fontSize:'2.2rem', marginBottom:'2rem', textAlign:'center'}}>Tus rutas favoritas</h1>
-      {favoritos.length === 0 ? (
-        <div style={{textAlign:'center', color:'#64748b', fontSize:'1.15rem'}}>No tienes rutas guardadas como favoritas.</div>
-      ) : (
-        <ul style={{listStyle:'none', padding:0, margin:0}}>
-          {favoritos.map((fav, idx) => (
-            <li key={idx} style={{
-              background:'#fff',
-              borderRadius:'12px',
-              boxShadow:'0 2px 12px #2563eb11',
-              marginBottom:'1.5rem',
-              padding:'1.5rem 1.2rem',
-              display:'flex',
-              alignItems:'center',
-              justifyContent:'space-between',
-              cursor:'pointer',
-              border: '1px solid #e0e7ff'
-            }}
-            onClick={() => setItinerarioSeleccionado(fav.itinerario)}
+      <ul style={{listStyle:'none', padding:0, margin:0}}>
+        {favoritos.map((fav, idx) => (
+          <li key={fav.id || idx} style={{
+            background:'#fff',
+            borderRadius:'12px',
+            boxShadow:'0 2px 12px #2563eb11',
+            marginBottom:'1.5rem',
+            padding:'1.5rem 1.2rem',
+            display:'flex',
+            alignItems:'center',
+            justifyContent:'space-between',
+            cursor:'pointer',
+            border: '1px solid #e0e7ff',
+            position: 'relative'
+          }}>
+            <span
+              style={{fontWeight:'bold', color:'#2563eb', fontSize:'1.15rem'}}
+              onClick={() => setItinerarioSeleccionado(fav.itinerario)}
             >
-              <span style={{fontWeight:'bold', color:'#2563eb', fontSize:'1.15rem'}}>
-                Ruta {idx + 1} guardada
-              </span>
-              <span style={{fontSize:'1.7rem', color:'#eab308', marginLeft:'1rem'}}>★</span>
-            </li>
-          ))}
-        </ul>
-      )}
+              Ruta {idx + 1} guardada
+            </span>
+            <span style={{fontSize:'1.7rem', color:'#eab308', marginLeft:'1rem'}}>★</span>
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                handleEliminarFavorito(fav.id, idx);
+              }}
+              title="Eliminar favorito"
+              style={{
+                position: 'absolute',
+                top: 10,
+                right: 12,
+                background: 'none',
+                border: 'none',
+                color: '#e11d48',
+                fontSize: '1.3rem',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                padding: 0,
+                lineHeight: 1
+              }}
+            >
+              ×
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

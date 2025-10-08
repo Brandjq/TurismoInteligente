@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, useEffect } from "react";
 
 const cintaImages = [
   '/mirador-atitlan.jpg',
@@ -12,6 +13,50 @@ const cintaImages = [
 ];
 
 export default function RutasBienvenida() {
+  const [usuarioId, setUsuarioId] = useState(null);
+
+  useEffect(() => {
+    let id = null;
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/session=([^;]+)/);
+      if (match) {
+        try {
+          const session = JSON.parse(decodeURIComponent(match[1]));
+          if (session.id) id = session.id;
+        } catch {}
+      }
+      if (!id) {
+        const idLocal = localStorage.getItem('usuario_id');
+        if (idLocal) id = parseInt(idLocal, 10);
+      }
+    }
+    setUsuarioId(id);
+  }, []);
+
+  const handleAceptarRuta = async (ruta) => {
+    if (usuarioId) {
+      await fetch('/api/rutas-generadas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuarioId,
+          nombre: ruta.nombre || 'Ruta generada',
+          itinerario: ruta.itinerario
+        })
+      });
+    }
+    let rutasLocal = [];
+    const local = localStorage.getItem('rutas_generadas');
+    if (local) rutasLocal = JSON.parse(local);
+    rutasLocal.push({
+      usuarioId,
+      nombre: ruta.nombre || 'Ruta generada',
+      itinerario: ruta.itinerario,
+      creadoEn: new Date().toISOString()
+    });
+    localStorage.setItem('rutas_generadas', JSON.stringify(rutasLocal));
+  };
+
   return (
     <div style={{
       maxWidth: '700px',

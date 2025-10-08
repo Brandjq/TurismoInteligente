@@ -53,10 +53,11 @@ model Review {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  isAdmin  Boolean @default(false)
+  id             Int            @id @default(autoincrement())
+  email          String         @unique
+  password       String
+  isAdmin        Boolean        @default(false)
+  rutasGeneradas RutaGenerada[]
 }
 
 model Favorito {
@@ -65,4 +66,15 @@ model Favorito {
   nombre     String    @db.VarChar(255)
   itinerario Json
   creadoEn   DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model RutaGenerada {
+  id         Int      @id @default(autoincrement())
+  usuarioId  Int
+  nombre     String?
+  itinerario Json
+  creadoEn   DateTime @default(now())
+  usuario    User     @relation(fields: [usuarioId], references: [id])
+
+  @@map("rutas_generadas")
 }

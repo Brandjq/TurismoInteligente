@@ -1,8 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
-import { useEffect } from "react";
 import { usePathname } from 'next/navigation';
 const navIcons = {
   inicio: (
@@ -53,6 +52,21 @@ export default function RootLayout({ children }) {
       } catch {}
     }
   }, []);
+  // Simula obtener usuario/correo
+  let usuario = '';
+  if (typeof window !== 'undefined') {
+    usuario = localStorage.getItem('usuario_nombre') || '';
+    if (!usuario) {
+      const match = document.cookie.match(/session=([^;]+)/);
+      if (match) {
+        try {
+          const session = JSON.parse(decodeURIComponent(match[1]));
+          usuario = session.nombre || session.email || '';
+        } catch {}
+      }
+    }
+  }
+
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -129,7 +143,9 @@ export default function RootLayout({ children }) {
                         </button>
                         {userMenuOpen && (
                           <div style={{
-                            position: 'static',
+                            position: 'absolute',
+                            right: 0,
+                            top: '2.5rem',
                             background: '#fff',
                             color: '#234e70',
                             borderRadius: '12px',
@@ -139,7 +155,6 @@ export default function RootLayout({ children }) {
                             zIndex: 9999,
                             fontWeight: 600,
                             fontSize: '1rem',
-                            marginTop: '0.5rem',
                             width: '100%',
                             display: 'flex',
                             flexDirection: 'column',
@@ -191,6 +206,33 @@ export default function RootLayout({ children }) {
                             >
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                               Favoritos
+                            </button>
+                            {/* NUEVO: Rutas generadas */}
+                            <button
+                              style={{
+                                background: '#f7fafc',
+                                color: '#234e70',
+                                border: 'none',
+                                borderRadius: '8px',
+                                padding: '0.6rem 1.2rem',
+                                fontWeight: 700,
+                                fontSize: '1rem',
+                                cursor: 'pointer',
+                                width: '100%',
+                                marginBottom: '0.7rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.7rem',
+                              }}
+                              onClick={() => {
+                                window.location.href = '/rutas-generadas';
+                              }}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                              </svg>
+                              Rutas generadas
                             </button>
                             <button
                               style={{
@@ -313,6 +355,33 @@ export default function RootLayout({ children }) {
                           >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                             Favoritos
+                          </button>
+                          {/* NUEVO: Rutas generadas */}
+                          <button
+                            style={{
+                              background: '#f7fafc',
+                              color: '#234e70',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '0.6rem 1.2rem',
+                              fontWeight: 700,
+                              fontSize: '1rem',
+                              cursor: 'pointer',
+                              width: '100%',
+                              marginBottom: '0.7rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.7rem',
+                            }}
+                            onClick={() => {
+                              window.location.href = '/rutas-generadas';
+                            }}
+                          >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#234e70" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle'}}>
+                              <circle cx="12" cy="12" r="10"/>
+                              <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Rutas generadas
                           </button>
                           <button
                             style={{

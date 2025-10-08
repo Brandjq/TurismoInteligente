@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
+import Link from 'next/link';
 
 export default function FavoritosPage() {
   const [favoritos, setFavoritos] = useState([]);
@@ -225,7 +226,7 @@ export default function FavoritosPage() {
         <p style={{ color: '#64748b', fontSize: '1.15rem', marginBottom: '2rem' }}>
           No tienes rutas guardadas como favoritas.
         </p>
-        <a
+        <Link
           href="/"
           style={{
             display: 'inline-block',
@@ -240,7 +241,7 @@ export default function FavoritosPage() {
           }}
         >
           Explorar rutas
-        </a>
+        </Link>
       </div>
     );
   }

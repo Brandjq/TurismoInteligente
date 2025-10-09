@@ -64,7 +64,21 @@ export default function ItinerarioFinal() {
       } catch {}
     }
 
-    // --- NUEVO: Intenta recuperar el itinerario de la URL (query param) si no está en storage ---
+    // Intenta recuperar el itinerario de window.__ITINERARIO__ global (debug/SSR fallback)
+    if (!data && typeof window !== 'undefined' && window.__ITINERARIO__) {
+      try {
+        data = JSON.stringify(window.__ITINERARIO__);
+        setItinerario(window.__ITINERARIO__);
+        window.localStorage.setItem('itinerario_final', data);
+        console.log('Itinerario recuperado de window.__ITINERARIO__:', data);
+        return;
+      } catch (e) {
+        setItinerario(null);
+        console.error('Error usando window.__ITINERARIO__:', e);
+      }
+    }
+
+    // Intenta recuperar el itinerario de la URL (query param) si no está en storage
     if (!data && typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const itinParam = params.get('itin');
@@ -72,7 +86,6 @@ export default function ItinerarioFinal() {
         try {
           data = decodeURIComponent(atob(itinParam));
           setItinerario(JSON.parse(data));
-          // Opcional: guardar en localStorage para futuras visitas
           window.localStorage.setItem('itinerario_final', data);
           console.log('Itinerario recuperado de query param:', data);
         } catch (e) {
@@ -82,7 +95,6 @@ export default function ItinerarioFinal() {
         return;
       }
     }
-    // --- FIN NUEVO ---
 
     if (data) {
       try {
@@ -557,5 +569,7 @@ export default function ItinerarioFinal() {
         </button>
       </div>
     </div>
+  );
+}
   );
 }

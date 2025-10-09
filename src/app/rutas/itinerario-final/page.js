@@ -51,6 +51,31 @@ export default function ItinerarioFinal() {
     setUsuario(mostrarUsuario);
     setCorreoUsuario(correo || '');
 
+    // Si el itinerario no existe, intenta recuperarlo de sessionStorage (fallback)
+    if (!data) {
+      try {
+        data = window.sessionStorage.getItem('itinerario_final');
+      } catch {}
+    }
+
+    // --- NUEVO: Intenta recuperar el itinerario de la URL (query param) si no está en storage ---
+    if (!data && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const itinParam = params.get('itin');
+      if (itinParam) {
+        try {
+          data = decodeURIComponent(atob(itinParam));
+          setItinerario(JSON.parse(data));
+          // Opcional: guardar en localStorage para futuras visitas
+          window.localStorage.setItem('itinerario_final', data);
+        } catch {
+          setItinerario(null);
+        }
+        return;
+      }
+    }
+    // --- FIN NUEVO ---
+
     if (data) {
       try {
         setItinerario(JSON.parse(data));

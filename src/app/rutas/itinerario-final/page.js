@@ -17,6 +17,12 @@ export default function ItinerarioFinal() {
     // Solo ejecutar en cliente
     if (typeof window === 'undefined') return;
 
+    // DEBUG: Log para ver si el efecto se ejecuta y qué hay en storage y query
+    console.log('ItinerarioFinal useEffect ejecutado');
+    console.log('localStorage itinerario_final:', window.localStorage.getItem('itinerario_final'));
+    console.log('sessionStorage itinerario_final:', window.sessionStorage.getItem('itinerario_final'));
+    console.log('window.location.search:', window.location.search);
+
     // Intenta leer el itinerario desde localStorage (solo en cliente)
     let data = null;
     try {
@@ -68,8 +74,10 @@ export default function ItinerarioFinal() {
           setItinerario(JSON.parse(data));
           // Opcional: guardar en localStorage para futuras visitas
           window.localStorage.setItem('itinerario_final', data);
-        } catch {
+          console.log('Itinerario recuperado de query param:', data);
+        } catch (e) {
           setItinerario(null);
+          console.error('Error decodificando itinerario de query param:', e);
         }
         return;
       }
@@ -79,11 +87,14 @@ export default function ItinerarioFinal() {
     if (data) {
       try {
         setItinerario(JSON.parse(data));
-      } catch {
+        console.log('Itinerario cargado:', data);
+      } catch (e) {
         setItinerario(null);
+        console.error('Error parseando itinerario:', e);
       }
     } else {
       setItinerario(null);
+      console.warn('No se encontró itinerario en storage ni query param');
     }
 
     // Verifica si este itinerario ya está marcado como favorito

@@ -64,16 +64,23 @@ export default function ItinerarioFinal() {
       } catch {}
     }
 
-    // Intenta recuperar el itinerario de la URL (query param) si no está en storage
+    // --- NUEVO: Intenta recuperar el itinerario de la URL (query param) si no está en storage ---
     if (!data && typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const itinParam = params.get('itin');
       if (itinParam) {
         try {
           data = decodeURIComponent(atob(itinParam));
-          setItinerario(JSON.parse(data));
-          window.localStorage.setItem('itinerario_final', data);
-          console.log('Itinerario recuperado de query param:', data);
+          let parsed = JSON.parse(data);
+          if (parsed && parsed.itinerario) {
+            setItinerario(parsed.itinerario);
+            window.localStorage.setItem('itinerario_final', JSON.stringify(parsed.itinerario));
+            console.log('Itinerario recuperado de query param (.itinerario):', parsed.itinerario);
+          } else if (Array.isArray(parsed)) {
+            setItinerario(parsed);
+            window.localStorage.setItem('itinerario_final', JSON.stringify(parsed));
+            console.log('Itinerario recuperado de query param (array):', parsed);
+          }
         } catch (e) {
           setItinerario(null);
           console.error('Error decodificando itinerario de query param:', e);
@@ -81,16 +88,36 @@ export default function ItinerarioFinal() {
         return;
       }
     }
+    // --- FIN NUEVO ---
 
-    // --- NUEVO: Si el itinerario no está en storage ni en la URL, muestra advertencia clara ---
-    if (!data) {
-      setItinerario(null);
-      console.warn('No se encontró itinerario en storage ni query param. Esto es normal si navegas directo o recargas la página en producción. Siempre guarda el itinerario en localStorage antes de navegar a /rutas/itinerario-final usando router.push o <Link />.');
-      return;
+    // --- NUEVO: Intenta recuperar el itinerario de window.__ITINERARIO__ global (para pruebas o SSR) ---
+    if (!data && typeof window !== 'undefined' && window.__ITINERARIO__) {
+      try {
+        let parsed = window.__ITINERARIO__;
+        if (parsed && parsed.itinerario) {
+          setItinerario(parsed.itinerario);
+          window.localStorage.setItem('itinerario_final', JSON.stringify(parsed.itinerario));
+          console.log('Itinerario recuperado de window.__ITINERARIO__ (.itinerario):', parsed.itinerario);
+        } else if (Array.isArray(parsed)) {
+          setItinerario(parsed);
+          window.localStorage.setItem('itinerario_final', JSON.stringify(parsed));
+          console.log('Itinerario recuperado de window.__ITINERARIO__ (array):', parsed);
+        }
+        return;
+      } catch (e) {
+        setItinerario(null);
+        console.error('Error usando window.__ITINERARIO__:', e);
+      }
     }
     // --- FIN NUEVO ---
 
-    // Si el itinerario es un array (como en tu log), úsalo directamente
+    if (!data) {
+      setItinerario(null);
+      console.warn('No se encontró itinerario en storage, query param ni window.__ITINERARIO__. Asegúrate de guardar el itinerario en localStorage o pasarlo por la URL antes de navegar.');
+      return;
+    }
+
+    // Si el itinerario es un array o un objeto con .itinerario, úsalo correctamente
     try {
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed)) {

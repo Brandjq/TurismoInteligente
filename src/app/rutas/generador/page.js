@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRouter } from 'next/navigation';
-import { navegarConItinerarioPorURL } from '../itinerario-final/page';
 
 export default function ItinerarioFinal() {
   const [itinerario, setItinerario] = useState(null);
@@ -599,10 +598,8 @@ export default function ItinerarioFinal() {
   );
 }
 
-// Elimina cualquier declaración de la función navegarConItinerarioPorURL en este archivo.
-// Solo deja la importación:
+// SOLO deja la importación de la función, NO la declares en este archivo.
 import { navegarConItinerarioPorURL } from '../itinerario-final/page';
 
-// NO declares nuevamente la función navegarConItinerarioPorURL aquí.
-// Usa la función importada donde la necesites, por ejemplo:
+// Usa la función importada donde la necesites:
 // navegarConItinerarioPorURL(itinerario, router);

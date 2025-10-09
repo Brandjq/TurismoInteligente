@@ -605,13 +605,3 @@ export default function ItinerarioFinal() {
   );
 }
 
-// Agrega esta función fuera del componente para reutilizarla donde generas el itinerario
-export function navegarConItinerarioPorURL(itinerario, router) {
-  if (!itinerario) return;
-  const encoded = btoa(encodeURIComponent(JSON.stringify({ itinerario })));
-  router.push(`/rutas/itinerario-final?itin=${encoded}`);
-}
-
-// Ejemplo de uso (NO dentro de ItinerarioFinal, sino donde generas el itinerario):
-// import { navegarConItinerarioPorURL } from './rutas/itinerario-final/page';
-// navegarConItinerarioPorURL(itinerario, router);

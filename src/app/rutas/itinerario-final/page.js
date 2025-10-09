@@ -22,6 +22,14 @@ export default function ItinerarioFinal() {
     console.log('localStorage itinerario_final:', window.localStorage.getItem('itinerario_final'));
     console.log('sessionStorage itinerario_final:', window.sessionStorage.getItem('itinerario_final'));
     console.log('window.location.search:', window.location.search);
+    // --- NUEVO LOGS ---
+    if (typeof window !== 'undefined') {
+      console.log('window.__ITINERARIO__:', window.__ITINERARIO__);
+      const params = new URLSearchParams(window.location.search);
+      console.log('itin param:', params.get('itin'));
+      console.log('Is in iframe:', window.self !== window.top);
+    }
+    // --- FIN NUEVO LOGS ---
 
     // Intenta leer el itinerario desde localStorage (solo en cliente)
     let data = null;

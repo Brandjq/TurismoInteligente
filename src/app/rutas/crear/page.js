@@ -118,6 +118,8 @@ export default function CrearRuta() {
         creadoEn: new Date().toISOString()
       });
       localStorage.setItem('rutas_generadas', JSON.stringify(rutasLocal));
+      // --- NUEVO: Guarda el itinerario final para la siguiente página ---
+      localStorage.setItem('itinerario_final', JSON.stringify(itinerario));
       // Redirige a la página final del itinerario (como antes)
       router.push('/rutas/itinerario-final');
     } catch (err) {

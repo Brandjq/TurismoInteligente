@@ -338,6 +338,13 @@ export default function ItinerarioFinal() {
     }
   };
 
+  // Agrega esta función para navegar pasando el itinerario por la URL
+  function navegarConItinerarioPorURL(itinerario, router) {
+    if (!itinerario) return;
+    const encoded = btoa(encodeURIComponent(JSON.stringify({ itinerario })));
+    router.push(`/rutas/itinerario-final?itin=${encoded}`);
+  }
+
   if (!itinerario) {
     return (
       <div style={{

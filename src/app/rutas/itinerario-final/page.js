@@ -64,20 +64,6 @@ export default function ItinerarioFinal() {
       } catch {}
     }
 
-    // Intenta recuperar el itinerario de window.__ITINERARIO__ global (debug/SSR fallback)
-    if (!data && typeof window !== 'undefined' && window.__ITINERARIO__) {
-      try {
-        data = JSON.stringify(window.__ITINERARIO__);
-        setItinerario(window.__ITINERARIO__);
-        window.localStorage.setItem('itinerario_final', data);
-        console.log('Itinerario recuperado de window.__ITINERARIO__:', data);
-        return;
-      } catch (e) {
-        setItinerario(null);
-        console.error('Error usando window.__ITINERARIO__:', e);
-      }
-    }
-
     // Intenta recuperar el itinerario de la URL (query param) si no está en storage
     if (!data && typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -96,17 +82,30 @@ export default function ItinerarioFinal() {
       }
     }
 
-    if (data) {
-      try {
-        setItinerario(JSON.parse(data));
-        console.log('Itinerario cargado:', data);
-      } catch (e) {
-        setItinerario(null);
-        console.error('Error parseando itinerario:', e);
-      }
-    } else {
+    // --- NUEVO: Si el itinerario no está en storage ni en la URL, muestra advertencia clara ---
+    if (!data) {
       setItinerario(null);
-      console.warn('No se encontró itinerario en storage ni query param');
+      console.warn('No se encontró itinerario en storage ni query param. Esto es normal si navegas directo o recargas la página en producción. Siempre guarda el itinerario en localStorage antes de navegar a /rutas/itinerario-final usando router.push o <Link />.');
+      return;
+    }
+    // --- FIN NUEVO ---
+
+    // Si el itinerario es un array (como en tu log), úsalo directamente
+    try {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        setItinerario(parsed);
+        console.log('Itinerario cargado (array):', parsed);
+      } else if (parsed && parsed.itinerario) {
+        setItinerario(parsed.itinerario);
+        console.log('Itinerario cargado (objeto con .itinerario):', parsed.itinerario);
+      } else {
+        setItinerario(parsed);
+        console.log('Itinerario cargado (otro):', parsed);
+      }
+    } catch (e) {
+      setItinerario(null);
+      console.error('Error parseando itinerario:', e);
     }
 
     // Verifica si este itinerario ya está marcado como favorito
@@ -571,5 +570,3 @@ export default function ItinerarioFinal() {
     </div>
   );
 }
- 
-  

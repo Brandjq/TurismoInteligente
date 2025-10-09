@@ -120,16 +120,51 @@ export default function ItinerarioFinal() {
     // Si el itinerario es un array o un objeto con .itinerario, úsalo correctamente
     try {
       const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
-        setItinerario(parsed);
-        console.log('Itinerario cargado (array):', parsed);
-      } else if (parsed && parsed.itinerario) {
+      // --- INICIO CAMBIO ---
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        Array.isArray(parsed.itinerario)
+      ) { // <--- CAMBIO
         setItinerario(parsed.itinerario);
         console.log('Itinerario cargado (objeto con .itinerario):', parsed.itinerario);
+      } else if (
+        parsed &&
+        typeof parsed === 'object' &&
+        parsed.raw &&
+        typeof parsed.raw === 'string'
+      ) { // <--- CAMBIO
+        // Intenta extraer el JSON del campo raw (puede venir como ```json ... ```
+        let raw = parsed.raw.trim();
+        if (raw.startsWith('```json')) {
+          raw = raw.replace(/^```json/, '').replace(/```$/, '').trim();
+        } else if (raw.startsWith('```')) {
+          raw = raw.replace(/^```/, '').replace(/```$/, '').trim();
+        }
+        try {
+          const rawParsed = JSON.parse(raw);
+          if (rawParsed && Array.isArray(rawParsed.itinerario)) {
+            setItinerario(rawParsed.itinerario);
+            console.log('Itinerario cargado (desde raw .itinerario):', rawParsed.itinerario);
+          } else if (Array.isArray(rawParsed)) {
+            setItinerario(rawParsed);
+            console.log('Itinerario cargado (desde raw array):', rawParsed);
+          } else {
+            setItinerario(rawParsed);
+            console.log('Itinerario cargado (desde raw otro):', rawParsed);
+          }
+        } catch (e) {
+          setItinerario(null);
+          console.error('Error parseando itinerario desde raw:', e);
+        }
+      } else if (Array.isArray(parsed)) {
+        setItinerario(parsed);
+        console.log('Itinerario cargado (array):', parsed);
       } else {
         setItinerario(parsed);
         console.log('Itinerario cargado (otro):', parsed);
       }
+      // --- FIN CAMBIO ---
     } catch (e) {
       setItinerario(null);
       console.error('Error parseando itinerario:', e);

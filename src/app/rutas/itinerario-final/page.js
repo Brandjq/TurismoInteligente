@@ -14,9 +14,22 @@ export default function ItinerarioFinal() {
 
   // Cargar estado de favorito desde localStorage
   useEffect(() => {
-    const data = localStorage.getItem('itinerario_final');
-    let nombreUsuario = localStorage.getItem('usuario_nombre');
+    // Solo ejecutar en cliente
+    if (typeof window === 'undefined') return;
+
+    // Intenta leer el itinerario desde localStorage (solo en cliente)
+    let data = null;
+    try {
+      data = window.localStorage.getItem('itinerario_final');
+    } catch {}
+    let nombreUsuario = '';
     let correo = '';
+
+    try {
+      nombreUsuario = window.localStorage.getItem('usuario_nombre');
+    } catch {}
+
+    // Intenta leer de la cookie de sesión
     if (typeof document !== 'undefined') {
       const match = document.cookie.match(/session=([^;]+)/);
       if (match) {
@@ -31,16 +44,28 @@ export default function ItinerarioFinal() {
         } catch {}
       }
     }
-    // Si no hay nombre, usa el correo
+
     let mostrarUsuario = nombreUsuario && nombreUsuario.trim().length > 0 && nombreUsuario !== 'Usuario' && nombreUsuario !== 'Invitado'
       ? nombreUsuario
       : (correo || 'Invitado');
     setUsuario(mostrarUsuario);
     setCorreoUsuario(correo || '');
-    if (data) setItinerario(JSON.parse(data));
+
+    if (data) {
+      try {
+        setItinerario(JSON.parse(data));
+      } catch {
+        setItinerario(null);
+      }
+    } else {
+      setItinerario(null);
+    }
 
     // Verifica si este itinerario ya está marcado como favorito
-    const favs = JSON.parse(localStorage.getItem('itinerarios_favoritos') || '[]');
+    let favs = [];
+    try {
+      favs = JSON.parse(window.localStorage.getItem('itinerarios_favoritos') || '[]');
+    } catch {}
     if (data && favs.some(fav => fav.itinerario && JSON.stringify(fav.itinerario) === data)) {
       setEsFavorito(true);
     }

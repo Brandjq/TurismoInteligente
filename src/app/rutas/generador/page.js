@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRouter } from 'next/navigation';
-// Importa la función para navegar pasando el itinerario por la URL
 import { navegarConItinerarioPorURL } from '../itinerario-final/page';
 
 export default function ItinerarioFinal() {

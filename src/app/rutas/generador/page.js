@@ -340,13 +340,6 @@ export default function ItinerarioFinal() {
     }
   };
 
-  // Agrega esta función para navegar pasando el itinerario por la URL
-  function navegarConItinerarioPorURL(itinerario, router) {
-    if (!itinerario) return;
-    const encoded = btoa(encodeURIComponent(JSON.stringify({ itinerario })));
-    router.push(`/rutas/itinerario-final?itin=${encoded}`);
-  }
-
   if (!itinerario) {
     return (
       <div style={{
@@ -607,13 +600,10 @@ export default function ItinerarioFinal() {
   );
 }
 
-// Agrega esta función fuera del componente para reutilizarla donde generas el itinerario
-export function navegarConItinerarioPorURL(itinerario, router) {
-  if (!itinerario) return;
-  const encoded = btoa(encodeURIComponent(JSON.stringify({ itinerario })));
-  router.push(`/rutas/itinerario-final?itin=${encoded}`);
-}
+// Elimina cualquier definición duplicada de navegarConItinerarioPorURL en este archivo.
+// Solo importa la función desde itinerario-final/page.js:
+import { navegarConItinerarioPorURL } from '../itinerario-final/page';
 
-// Ejemplo de uso (NO dentro de ItinerarioFinal, sino donde generas el itinerario):
-// import { navegarConItinerarioPorURL } from './rutas/itinerario-final/page';
+// NO declares nuevamente la función navegarConItinerarioPorURL aquí.
+// Usa la función importada donde la necesites, por ejemplo:
 // navegarConItinerarioPorURL(itinerario, router);

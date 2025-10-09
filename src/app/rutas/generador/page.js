@@ -599,8 +599,8 @@ export default function ItinerarioFinal() {
   );
 }
 
-// Elimina cualquier definición duplicada de navegarConItinerarioPorURL en este archivo.
-// Solo importa la función desde itinerario-final/page.js:
+// Elimina cualquier declaración de la función navegarConItinerarioPorURL en este archivo.
+// Solo deja la importación:
 import { navegarConItinerarioPorURL } from '../itinerario-final/page';
 
 // NO declares nuevamente la función navegarConItinerarioPorURL aquí.

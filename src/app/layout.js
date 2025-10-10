@@ -71,6 +71,11 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="es">
+      <head>
+        {/* ...existing code... */}
+        <link rel="icon" href="/logo.jpg" type="image/jpeg" />
+        {/* Si tienes un logo en PNG, puedes usar type="image/png" */}
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {!hideNavbar && (
           <>

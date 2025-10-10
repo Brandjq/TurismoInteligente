@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
+import RutaEnCursoBanner from './components/RutaEnCursoBanner';
+
 const navIcons = {
   inicio: (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign:'middle',marginRight:8}}><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -72,6 +74,41 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {!hideNavbar && (
           <>
+            {/* Logo y nombre del sistema en la barra de navegación */}
+            <div style={{
+              position: 'absolute',
+              top: 6,
+              left: 18,
+              zIndex: 6000,
+              display: 'flex',
+              alignItems: 'center',
+              height: 54
+            }}>
+              <Link href="/" style={{display:'flex',alignItems:'center',textDecoration:'none'}}>
+                <img
+                  src="/logo.jpg"
+                  alt="Itour Sololá"
+                  style={{
+                    width: 54,
+                    height: 54,
+                    borderRadius: '14px',
+                    boxShadow: '0 2px 8px #2563eb22',
+                    objectFit: 'cover',
+                    marginRight: 14
+                  }}
+                />
+                <span style={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  fontSize: '1.08rem', // similar a los links del menú
+                  letterSpacing: '1.1px',
+                  textShadow: '0 2px 8px #2563eb55, 0 1px 2px #234e7011',
+                  lineHeight: '1.1'
+                }}>
+                  Itour Sololá
+                </span>
+              </Link>
+            </div>
             {/* Botón regresar flotante global, solo icono */}
             <div style={{ position: 'fixed', top: 24, left: 24, zIndex: 5000 }}>
               <Link href="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, background: 'linear-gradient(90deg, #3182ce 60%, #38b2ac 100%)', borderRadius: '50%', boxShadow: '0 2px 12px #3182ce22', textDecoration: 'none', border: 'none', transition: 'background 0.2s', }} aria-label="Regresar">
@@ -460,7 +497,20 @@ export default function RootLayout({ children }) {
             }
           }
         `}</style>
-        <main>{children}</main>
+        <main>
+          <RutaEnCursoBanner />
+          {children}
+        </main>
+        <footer style={{
+          textAlign: 'center',
+          marginTop: '2.5rem',
+          color: '#64748b',
+          fontSize: '1.08rem',
+          fontWeight: 500,
+          padding: '1.5rem 0 0.5rem 0'
+        }}>
+          © 2025 Todos los derechos reservados. Desarrollado por Brandon Nájera.
+        </footer>
       </body>
     </html>
   );

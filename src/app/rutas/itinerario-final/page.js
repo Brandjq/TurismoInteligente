@@ -309,67 +309,20 @@ export default function ItinerarioFinal() {
       setMensaje('No se encontró el correo del usuario.');
       return;
     }
-    // Evita doble click rápido
     if (mensaje === 'Enviando correo...') return;
 
     setMensaje('Enviando correo...');
     try {
-      // Generar PDF igual que el botón de descarga
-      const element = document.getElementById('itinerario-contenido');
-      let pdfBase64 = '';
-      if (element) {
-        const canvas = await html2canvas(element, { scale: 1.2, useCORS: true });
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = pageWidth - 20;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        let position = 10;
-        if (imgHeight <= pageHeight - 20) {
-          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-        } else {
-          let pageCount = Math.ceil(imgHeight / (pageHeight - 20));
-          for (let i = 0; i < pageCount; i++) {
-            let sourceY = (canvas.height / imgHeight) * (i * (pageHeight - 20));
-            let sourceHeight = (canvas.height / imgHeight) * (pageHeight - 20);
-            let pageCanvas = document.createElement('canvas');
-            pageCanvas.width = canvas.width;
-            pageCanvas.height = sourceHeight;
-            let ctx = pageCanvas.getContext('2d');
-            ctx.drawImage(
-              canvas,
-              0,
-              sourceY,
-              canvas.width,
-              sourceHeight,
-              0,
-              0,
-              canvas.width,
-              sourceHeight
-            );
-            let pageImgData = pageCanvas.toDataURL('image/png');
-            if (i > 0) pdf.addPage();
-            pdf.addImage(pageImgData, 'PNG', 10, 10, imgWidth, pageHeight - 20);
-          }
-        }
-        pdfBase64 = pdf.output('datauristring').split(',')[1]; // solo base64
-      }
-
+      // Solo envía el itinerario y el correo, NO el PDF
       await fetch('/api/enviar-itinerario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: correoUsuario,
-          itinerario,
-          pdfBase64
+          itinerario
         })
       });
+
       setMensaje('¡Correo enviado con éxito!');
       setTimeout(() => {
         setMensaje('');
@@ -647,4 +600,3 @@ export default function ItinerarioFinal() {
     </div>
   );
 }
-

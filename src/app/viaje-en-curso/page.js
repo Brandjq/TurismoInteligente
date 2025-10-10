@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ViajeEnCurso() {
@@ -7,17 +7,39 @@ export default function ViajeEnCurso() {
   const [checklist, setChecklist] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
   const router = useRouter();
+  const confettiRef = useRef(null);
 
   useEffect(() => {
     const data = localStorage.getItem('itinerario_final');
     if (data) setItinerario(JSON.parse(data));
+    // Marca que hay una ruta en curso
+    localStorage.setItem('ruta_en_curso', 'true');
+    // Cargar checklist guardado si existe
+    const checklistGuardado = localStorage.getItem('checklist_ruta');
+    if (checklistGuardado) {
+      setChecklist(JSON.parse(checklistGuardado));
+    }
   }, []);
 
   const handleCheck = (diaIdx, actIdx) => {
-    setChecklist(prev => ({
-      ...prev,
-      [`${diaIdx}-${actIdx}`]: !prev[`${diaIdx}-${actIdx}`]
-    }));
+    setChecklist(prev => {
+      const updated = {
+        ...prev,
+        [`${diaIdx}-${actIdx}`]: !prev[`${diaIdx}-${actIdx}`]
+      };
+      // Guarda el checklist actualizado en localStorage para persistencia
+      localStorage.setItem('checklist_ruta', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const finalizarRuta = () => {
+    localStorage.removeItem('itinerario_final');
+    localStorage.removeItem('ruta_en_curso');
+    localStorage.removeItem('checklist_ruta'); // Limpia el checklist al finalizar
+    setItinerario([]);
+    setChecklist({});
+    router.push('/rutas/crear');
   };
 
   // Calcular progreso
@@ -35,11 +57,40 @@ export default function ViajeEnCurso() {
   }
   const progreso = totalActividades > 0 ? Math.round((completadas / totalActividades) * 100) : 0;
 
-  // Mostrar mensaje de éxito si completa todo
+  // Función para elegir emoji según el progreso
+  function getProgressEmoji(p) {
+    if (p === 100) return "🏆";
+    if (p >= 80) return "😃";
+    if (p >= 60) return "😊";
+    if (p >= 40) return "🙂";
+    if (p >= 20) return "🚶";
+    if (p > 0) return "🌱";
+    return "🗺️";
+  }
+
+  // Mostrar mensaje de éxito si completa todo y animación de confeti
   useEffect(() => {
     if (totalActividades > 0 && completadas === totalActividades) {
       setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 4000);
+      // Confetti animación extra (más visible)
+      if (confettiRef.current) {
+        confettiRef.current.classList.add('show-confetti');
+        setTimeout(() => confettiRef.current.classList.remove('show-confetti'), 4000);
+      }
+      // Enviar correo de agradecimiento (si hay correo guardado)
+      const correo = localStorage.getItem('usuario_email');
+      if (correo) {
+        fetch('/api/enviar-agradecimiento', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: correo })
+        }).catch(() => {});
+      }
+      // Redirige a la pantalla de agradecimiento después de la animación
+      setTimeout(() => {
+        setShowSuccess(false);
+        router.push('/viaje-finalizado');
+      }, 4200);
     }
   }, [completadas, totalActividades]);
 
@@ -51,70 +102,177 @@ export default function ViajeEnCurso() {
       background: 'linear-gradient(120deg,#e0e7ff 60%,#fff 100%)',
       borderRadius: '28px',
       boxShadow: '0 8px 40px rgba(52,152,219,0.15)',
-      fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif"
+      fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif",
+      position: 'relative'
     }}>
-      {/* Barra de progreso */}
+      {/* Confetti animation */}
+      <div ref={confettiRef} className="confetti-container" />
+      <style>{`
+        .confetti-container {
+          pointer-events: none;
+          position: fixed;
+          top: 0; left: 0; width: 100vw; height: 100vh;
+          z-index: 9999;
+          display: none;
+        }
+        .show-confetti {
+          display: block !important;
+          animation: confetti-fall 4s linear;
+          background-image:
+            repeating-linear-gradient(120deg, #22c55e 0 10px, transparent 10px 20px),
+            repeating-linear-gradient(60deg, #2563eb 0 10px, transparent 10px 20px),
+            repeating-linear-gradient(90deg, #fbbf24 0 10px, transparent 10px 20px),
+            repeating-linear-gradient(45deg, #e11d48 0 10px, transparent 10px 20px);
+          background-size: 100vw 100vh;
+          opacity: 0.85;
+        }
+        @keyframes confetti-fall {
+          0% { opacity: 0.85; }
+          100% { opacity: 0; }
+        }
+      `}</style>
+      {/* Barra de progreso mejorada */}
       <div style={{
         marginBottom: '2.2rem',
-        marginTop: '-1.2rem'
+        marginTop: '-1.2rem',
+        position: 'relative'
       }}>
         <div style={{
           width: '100%',
           background: '#e0e7ff',
-          borderRadius: '12px',
-          height: '22px',
+          borderRadius: '16px',
+          height: '32px',
           boxShadow: '0 2px 8px #2563eb11',
           overflow: 'hidden',
-          position: 'relative'
+          position: 'relative',
+          border: '2px solid #2563eb'
         }}>
           <div style={{
             width: `${progreso}%`,
-            background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+            background: progreso === 100
+              ? 'linear-gradient(90deg,#fbbf24 0%,#22c55e 100%)'
+              : 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
             height: '100%',
-            borderRadius: '12px',
-            transition: 'width 0.4s'
+            borderRadius: '16px',
+            transition: 'width 0.6s cubic-bezier(.4,2,.6,1), background 0.4s',
+            boxShadow: progreso === 100 ? '0 0 16px #fbbf24cc' : '0 2px 8px #2563eb22'
           }} />
-          <span style={{
-            position: 'absolute',
-            left: '50%',
-            top: 0,
-            transform: 'translateX(-50%)',
-            color: '#2563eb',
-            fontWeight: 'bold',
-            fontSize: '1.1rem',
-            lineHeight: '22px'
-          }}>
-            {progreso}% completado
-          </span>
+        </div>
+        {/* Porcentaje y emoji fuera de la barra */}
+        <div style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: '#fff',
+          fontWeight: 'bold',
+          fontSize: '1.25rem',
+          letterSpacing: '1px',
+          textShadow: '0 2px 8px #222, 0 1px 2px #2563eb88',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.7em',
+          pointerEvents: 'none'
+        }}>
+          {progreso}% completado
+          <span style={{fontSize:'1.4em', marginLeft:'0.5em'}}>{getProgressEmoji(progreso)}</span>
         </div>
       </div>
       {/* Mensaje de éxito */}
       {showSuccess && (
         <div style={{
           margin: '2rem auto 1.5rem auto',
-          maxWidth: 500,
-          background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+          maxWidth: 600,
+          background: 'linear-gradient(120deg,#fbbf24 0%,#22c55e 100%)',
           color: '#fff',
-          borderRadius: '18px',
-          padding: '2rem 2rem',
+          borderRadius: '28px',
+          padding: '3rem 2.5rem',
           fontWeight: 'bold',
-          fontSize: '1.5rem',
+          fontSize: '2rem',
           textAlign: 'center',
-          boxShadow: '0 2px 16px #22c55e33',
+          boxShadow: '0 8px 40px #22c55e33',
           letterSpacing: '1px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '1rem'
+          gap: '2rem',
+          position: 'relative',
+          zIndex: 10000
         }}>
-          <span style={{fontSize:'2.5rem'}}>🎉</span>
-          ¡Felicidades! Has completado todas las actividades de tu viaje.<br />
-          <span style={{fontSize:'1.1rem', fontWeight:400}}>Gracias por usar <span style={{color:'#fbbf24'}}>Itour Sololá</span>. ¡Esperamos que hayas disfrutado tu experiencia!</span>
+          <img src="/logo.jpg" alt="Itour Sololá" style={{
+            width: '180px',
+            marginBottom: '1.2rem',
+            borderRadius: '18px',
+            boxShadow: '0 2px 12px #2563eb22'
+          }} />
+          <span style={{fontSize:'2.7rem'}}>🎉🎊</span>
+          <div>
+            <div>¡Felicidades! Has completado todas las actividades de tu viaje.</div>
+            <div style={{fontSize:'1.25rem', fontWeight:400, marginTop:'1.2rem'}}>
+              Gracias por usar <span style={{color:'#2563eb'}}>Itour Sololá</span>.<br />
+              Te hemos enviado un mensaje de agradecimiento a tu correo.<br />
+              ¡Sigue explorando y generando nuevas rutas!
+            </div>
+          </div>
+          <style>{`
+            .show-confetti {
+              display: block !important;
+              animation: confetti-fall 4s linear;
+              background-image:
+                repeating-linear-gradient(120deg, #22c55e 0 10px, transparent 10px 20px),
+                repeating-linear-gradient(60deg, #2563eb 0 10px, transparent 10px 20px),
+                repeating-linear-gradient(90deg, #fbbf24 0 10px, transparent 10px 20px),
+                repeating-linear-gradient(45deg, #e11d48 0 10px, transparent 10px 20px);
+              background-size: 100vw 100vh;
+              opacity: 0.85;
+            }
+            @keyframes confetti-fall {
+              0% { opacity: 0.85; }
+              100% { opacity: 0; }
+            }
+          `}</style>
         </div>
       )}
       <div style={{textAlign:'center', marginBottom:'2.5rem'}}>
         <h2 style={{color:'#22c55e', fontSize:'2.2rem', marginBottom:'1.2rem'}}>¡Gracias por usar Itour Sololá!</h2>
         <p style={{fontSize:'1.25rem', color:'#2563eb', marginBottom:'1.5rem'}}>Disfruta tu viaje y marca los lugares que vayas visitando.</p>
+      </div>
+      {/* Recordatorio de dejar reseña */}
+      <div style={{
+        maxWidth: 600,
+        margin: '0 auto 2.5rem auto',
+        background: 'linear-gradient(90deg,#fef9c3 60%,#e0e7ff 100%)',
+        borderRadius: '16px',
+        padding: '1.7rem 2rem',
+        boxShadow: '0 2px 12px #fbbf2433',
+        textAlign: 'center',
+        color: '#b45309',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '1.2rem'
+      }}>
+        <span style={{fontSize:'2rem'}}>⭐</span>
+        <div style={{fontSize:'1.15rem', fontWeight:500}}>
+          ¿Ya terminaste alguna actividad o visitaste un lugar?<br />
+          <span style={{color:'#2563eb'}}>¡Déjanos tu reseña y comentario sobre cada experiencia!</span>
+        </div>
+        <button
+          onClick={() => router.push('/contacto')}
+          style={{
+            background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '0.9rem 2.2rem',
+            cursor: 'pointer',
+            boxShadow: '0 2px 12px #2563eb33'
+          }}
+        >
+          Dejar mi reseña
+        </button>
       </div>
       <div>
         {Array.isArray(itinerario) ? (
@@ -129,32 +287,79 @@ export default function ViajeEnCurso() {
             }}>
               <h3 style={{color:'#22c55e', fontSize:'1.5rem', marginBottom:'1rem'}}>Día {dia.dia}</h3>
               {Array.isArray(dia.actividades) && dia.actividades.length > 0 ? (
-                dia.actividades.map((act, actIdx) => (
-                  <div key={actIdx} style={{
-                    display:'flex',
-                    alignItems:'center',
-                    gap:'1rem',
-                    marginBottom:'1.2rem',
-                    background:'#f8fafc',
-                    borderRadius:'10px',
-                    padding:'1rem 1.2rem'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={!!checklist[`${diaIdx}-${actIdx}`]}
-                      onChange={() => handleCheck(diaIdx, actIdx)}
-                      style={{width:'1.3em', height:'1.3em'}}
-                    />
-                    <span style={{
-                      fontSize:'1.15rem',
-                      color: checklist[`${diaIdx}-${actIdx}`] ? '#22c55e' : '#2563eb',
-                      textDecoration: checklist[`${diaIdx}-${actIdx}`] ? 'line-through' : 'none',
-                      fontWeight:'bold'
+                dia.actividades.map((act, actIdx) => {
+                  const checked = !!checklist[`${diaIdx}-${actIdx}`];
+                  return (
+                    <div key={actIdx} style={{
+                      display:'flex',
+                      alignItems:'center',
+                      gap:'1.2rem',
+                      marginBottom:'1.2rem',
+                      background: checked ? 'linear-gradient(90deg,#bbf7d0 60%,#e0e7ff 100%)' : '#f8fafc',
+                      borderRadius:'12px',
+                      padding:'1.1rem 1.5rem',
+                      boxShadow: checked ? '0 2px 12px #22c55e33' : '0 2px 8px #2563eb11',
+                      border: checked ? '2px solid #22c55e' : '1px solid #e0e7ff',
+                      transition: 'background 0.3s, border 0.3s, box-shadow 0.3s'
                     }}>
-                      {act.actividad} en {act.lugar}
-                    </span>
-                  </div>
-                ))
+                      <label style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        cursor: 'pointer',
+                        width: '100%'
+                      }}>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '2.1em',
+                          height: '2.1em',
+                          borderRadius: '50%',
+                          border: checked ? '2.5px solid #22c55e' : '2.5px solid #2563eb',
+                          background: checked ? '#22c55e' : '#fff',
+                          transition: 'background 0.3s, border 0.3s',
+                          marginRight: '0.7em',
+                          boxShadow: checked ? '0 0 0 4px #bbf7d055' : 'none'
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => handleCheck(diaIdx, actIdx)}
+                            style={{
+                              width: '1.5em',
+                              height: '1.5em',
+                              accentColor: checked ? '#22c55e' : '#2563eb',
+                              cursor: 'pointer',
+                              opacity: 0,
+                              position: 'absolute'
+                            }}
+                          />
+                          {checked ? (
+                            <svg width="22" height="22" viewBox="0 0 22 22" style={{display:'block'}}>
+                              <circle cx="11" cy="11" r="10" fill="#22c55e" />
+                              <polyline points="6,12 10,16 16,8" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          ) : (
+                            <svg width="22" height="22" viewBox="0 0 22 22" style={{display:'block'}}>
+                              <circle cx="11" cy="11" r="10" fill="#fff" stroke="#2563eb" strokeWidth="2"/>
+                            </svg>
+                          )}
+                        </span>
+                        <span style={{
+                          fontSize:'1.18rem',
+                          color: checked ? '#22c55e' : '#2563eb',
+                          textDecoration: checked ? 'line-through' : 'none',
+                          fontWeight:'bold',
+                          letterSpacing: '0.5px',
+                          transition: 'color 0.3s, text-decoration 0.3s'
+                        }}>
+                          {act.actividad} <span style={{color:'#475569', fontWeight:400}}>en</span> <span style={{color:'#22c55e', fontWeight:600}}>{act.lugar}</span>
+                        </span>
+                      </label>
+                    </div>
+                  );
+                })
               ) : (
                 <div style={{color:'#e11d48', fontSize:'1.1rem'}}>No hay actividades para este día.</div>
               )}
@@ -178,10 +383,27 @@ export default function ViajeEnCurso() {
             borderRadius: '10px',
             padding: '1rem 2.2rem',
             cursor: 'pointer',
-            boxShadow: '0 2px 12px #2563eb33'
+            boxShadow: '0 2px 12px #2563eb33',
+            marginRight: '1rem'
           }}
         >
           Volver al inicio
+        </button>
+        <button
+          onClick={finalizarRuta}
+          style={{
+            background: '#e11d48',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '1.15rem',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '1rem 2.2rem',
+            cursor: 'pointer',
+            boxShadow: '0 2px 12px #e11d4833'
+          }}
+        >
+          Finalizar ruta
         </button>
       </div>
     </div>

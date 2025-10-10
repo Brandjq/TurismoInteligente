@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 
 const cintaImages = [
   '/mirador-atitlan.jpg',
@@ -14,6 +15,8 @@ const cintaImages = [
 
 export default function RutasBienvenida() {
   const [usuarioId, setUsuarioId] = useState(null);
+  const [rutaEnCurso, setRutaEnCurso] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     let id = null;
@@ -31,6 +34,8 @@ export default function RutasBienvenida() {
       }
     }
     setUsuarioId(id);
+
+    setRutaEnCurso(localStorage.getItem('ruta_en_curso') === 'true');
   }, []);
 
   const handleAceptarRuta = async (ruta) => {
@@ -57,6 +62,45 @@ export default function RutasBienvenida() {
     localStorage.setItem('rutas_generadas', JSON.stringify(rutasLocal));
   };
 
+  if (rutaEnCurso) {
+    return (
+      <div style={{
+        maxWidth: 600,
+        margin: '4rem auto',
+        padding: '2.5rem 2rem',
+        background: 'linear-gradient(120deg,#fef9c3 60%,#fff 100%)',
+        borderRadius: '18px',
+        boxShadow: '0 4px 24px #fbbf2433',
+        textAlign: 'center',
+        color: '#b45309'
+      }}>
+        <span style={{fontSize:'2.2rem', display:'block', marginBottom:'1rem'}}>⚠️</span>
+        <h2 style={{color:'#eab308', fontWeight:'bold', fontSize:'2rem', marginBottom:'1rem'}}>¡Ya tienes una ruta en curso!</h2>
+        <p style={{fontSize:'1.15rem', marginBottom:'2rem'}}>
+          Debes finalizar tu ruta actual antes de crear una nueva.<br />
+          <span style={{color:'#2563eb', fontWeight:'bold'}}>Haz click en el banner azul para continuar tu ruta en curso.</span>
+        </p>
+        <button
+          onClick={() => router.push('/viaje-en-curso')}
+          style={{
+            background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '1rem 2.2rem',
+            cursor: 'pointer',
+            boxShadow: '0 2px 12px #2563eb33'
+          }}
+        >
+          Ir a mi ruta en curso
+        </button>
+      </div>
+    );
+  }
+
+
   return (
     <div style={{
       maxWidth: '700px',
@@ -68,6 +112,7 @@ export default function RutasBienvenida() {
       textAlign: 'center',
       position: 'relative'
     }}>
+   
       {/* Carrusel animado tipo cinta */}
       <div style={{
         width: '100%',

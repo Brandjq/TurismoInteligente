@@ -719,6 +719,8 @@ export default function Home() {
         )}
 
       </main>
+      {/* Elimina este bloque de footer, ya que ahora está en layout.js */}
+      {/* 
       <footer style={{
         textAlign: 'center',
         marginTop: '2.5rem',
@@ -729,6 +731,7 @@ export default function Home() {
       }}>
         © {new Date().getFullYear()} Todos los derechos reservados. Desarrollado por Brandon Nájera.
       </footer>
+      */}
     </>
   );
 }

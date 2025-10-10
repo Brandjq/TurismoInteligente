@@ -66,6 +66,25 @@ export default function HistoriaSolola() {
       boxShadow: '0 4px 32px rgba(26,188,156,0.10)',
       width: '100%'
     }}>
+      {/* Video Cloudinary al principio */}
+      <div style={{margin: '0 auto 2.5rem auto', maxWidth: 900, textAlign: 'center'}}>
+        <video
+          width="100%"
+          style={{
+            maxWidth: 800,
+            borderRadius: '22px',
+            boxShadow: '0 4px 24px #2563eb33',
+            background: '#000'
+          }}
+          controls
+        >
+          <source src="https://res.cloudinary.com/dy0agrote/video/upload/v1760057339/Conocias_Solol%C3%A1__qazcxf.mp4" type="video/mp4" />
+          Tu navegador no soporta el video.
+        </video>
+        <div style={{fontSize:'1.18rem', color:'#2563eb', marginTop:'0.7rem', fontWeight:'bold'}}>
+          Dale play para conocer mas sobre Sololá.
+        </div>
+      </div>
       <style>{`
         .municipios-lista ul {
           font-size: 2.1rem;

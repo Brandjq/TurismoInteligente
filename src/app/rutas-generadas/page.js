@@ -82,9 +82,44 @@ export default function RutasGeneradasPage() {
         >
           ← Volver a rutas generadas
         </button>
-        <pre style={{background:'#fff', padding:'1.5rem', borderRadius:'14px', color:'#222', fontSize:'1.15rem', whiteSpace:'pre-wrap', wordBreak:'break-word'}}>
-          {JSON.stringify(itinerarioSeleccionado, null, 2)}
-        </pre>
+        {/* Visualización bonita del itinerario */}
+        <h2 style={{color:'#2563eb', marginBottom:'1.5rem'}}>Itinerario detallado</h2>
+        {Array.isArray(itinerarioSeleccionado) ? itinerarioSeleccionado.map((dia, idx) => (
+          <div key={idx} style={{
+            background:'#fff',
+            borderRadius:'14px',
+            marginBottom:'2rem',
+            padding:'1.5rem 1.2rem',
+            boxShadow:'0 2px 12px #2563eb11'
+          }}>
+            <h3 style={{color:'#2563eb', marginBottom:'1rem'}}>Día {dia.dia}</h3>
+            <ul style={{paddingLeft:0, listStyle:'none', marginBottom:'1rem'}}>
+              {dia.actividades.map((act, i) => (
+                <li key={i} style={{
+                  marginBottom:'1.2rem',
+                  borderLeft:'4px solid #2563eb',
+                  paddingLeft:'1rem',
+                  background:'#f8fafc',
+                  borderRadius:'8px',
+                  padding:'1rem'
+                }}>
+                  <strong>{act.actividad}</strong> en <span style={{color:'#2563eb'}}>{act.lugar}</span><br />
+                  <span>🗺️ <a href={act.mapa} target="_blank" rel="noopener noreferrer" style={{color:'#2563eb'}}>Ver mapa</a></span><br />
+                  <span>🚗 <b>Transporte:</b> {act.transporte}</span><br />
+                  <span>📏 <b>Distancia:</b> {act.distancia}</span><br />
+                  <span>⏱️ <b>Tiempo estimado:</b> {act.tiempo_estimado}</span><br />
+                  <span>📝 <b>Descripción:</b> {act.descripcion}</span><br />
+                  <span>🍽️ <b>Restaurante cercano:</b> {act.restaurante_cercano}</span>
+                </li>
+              ))}
+            </ul>
+            <div style={{background:'#e0e7ff', borderRadius:'8px', padding:'0.8rem', color:'#234e70'}}>
+              <b>Recomendación:</b> {dia.recomendacion}
+            </div>
+          </div>
+        )) : (
+          <div style={{color:'#e11d48'}}>Itinerario no válido</div>
+        )}
       </div>
     );
   }

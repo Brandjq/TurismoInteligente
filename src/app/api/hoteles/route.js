@@ -36,16 +36,29 @@ export async function POST(req) {
   await prisma.$disconnect();
   return Response.json(hotel);
 }
-export async function DELETE(req) {
+
+// El endpoint correcto para eliminar un hotel por id con DELETE debe estar en:
+// src/app/api/hoteles/[id]/route.js
+// No en este archivo. Este archivo maneja /api/hoteles (GET, POST, DELETE para todos, pero no para uno específico).
+
+// Debes crear el archivo:
+// src/app/api/hoteles/[id]/route.js
+// Y poner ahí el handler DELETE para eliminar por id, así:
+
+/*
+// src/app/api/hoteles/[id]/route.js
+import { PrismaClient } from '@prisma/client';
+
+export async function DELETE(request, { params }) {
   const prisma = new PrismaClient();
+  const id = Number(params.id);
   try {
-    const { id } = await req.json();
-    if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 });
     await prisma.hotel.delete({ where: { id } });
     await prisma.$disconnect();
-    return Response.json({ success: true });
+    return new Response(null, { status: 204 });
   } catch (err) {
     await prisma.$disconnect();
-    return Response.json({ error: 'Error al eliminar hotel' }, { status: 500 });
+    return new Response(JSON.stringify({ error: 'Error al eliminar hotel' }), { status: 500 });
   }
 }
+*/

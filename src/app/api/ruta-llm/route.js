@@ -3,6 +3,12 @@
 export async function POST(request) {
   const body = await request.json();
   const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return Response.json({
+      itinerario: [],
+      raw: 'Error: No se encontró la variable OPENAI_API_KEY en el entorno del servidor.'
+    });
+  }
 
   let promptText = '';
   if (body.prompt) {

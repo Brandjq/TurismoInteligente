@@ -68,15 +68,45 @@ Solo lugares y restaurantes de Sololá.
     }
     const content = data.choices[0].message.content;
     rawContent = content;
-    // Intenta extraer el JSON del contenido
+    // Intenta extraer el JSON del contenido (mejor tolerancia a respuestas largas)
+    let jsonStr = '';
     const match = content.match(/\{[\s\S]*\}/);
     if (match) {
+      jsonStr = match[0];
+    } else {
+      // Intenta buscar JSON aunque esté cortado por tokens
+      const start = content.indexOf('{');
+      const end = content.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        jsonStr = content.substring(start, end + 1);
+      }
+    }
+    if (jsonStr) {
       try {
-        const parsed = JSON.parse(match[0]);
+        // Si la respuesta es muy larga, elimina comentarios tipo // ... y líneas vacías
+        const cleanJson = jsonStr
+          .replace(/\/\/.*$/gm, '') // quita comentarios de línea
+          .replace(/,\s*([\]}])/g, '$1') // quita comas finales inválidas
+          .replace(/(\r?\n|\r)/g, ' '); // quita saltos de línea para evitar errores por respuestas largas
+        const parsed = JSON.parse(cleanJson);
         itinerario = parsed.itinerario || [];
       } catch (err) {
-        // Si el JSON está mal formado, muestra el texto crudo
-        return Response.json({ itinerario: [], raw: content });
+        // Si el JSON está mal formado, intenta parsear por partes (recuperar lo que se pueda)
+        try {
+          // Busca el array de días manualmente
+          const diasMatch = cleanJson.match(/"itinerario"\s*:\s*(\[[\s\S]*\])/);
+          if (diasMatch) {
+            const diasStr = diasMatch[1]
+              .replace(/,\s*([\]}])/g, '$1')
+              .replace(/(\r?\n|\r)/g, ' ');
+            const diasParsed = JSON.parse(diasStr);
+            itinerario = diasParsed;
+          } else {
+            return Response.json({ itinerario: [], raw: content });
+          }
+        } catch {
+          return Response.json({ itinerario: [], raw: content });
+        }
       }
     } else {
       // Si el modelo no responde en JSON, muestra el texto crudo para depurar

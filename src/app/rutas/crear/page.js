@@ -28,9 +28,11 @@ const actividades = [
 export default function CrearRuta() {
   const [seleccionadas, setSeleccionadas] = useState([]);
   const [dias, setDias] = useState(0); // inicia en 0
+  const [showMaxDiasMsg, setShowMaxDiasMsg] = useState(false);
   const [itinerario, setItinerario] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showConfirmRegenerar, setShowConfirmRegenerar] = useState(false);
+  const [bloquearSeleccion, setBloquearSeleccion] = useState(false);
   const router = useRouter();
 
   const toggleActividad = (nombre) => {
@@ -43,6 +45,7 @@ export default function CrearRuta() {
 
   const handleSiguiente = async () => {
     setLoading(true);
+    setBloquearSeleccion(true); // Bloquea selección al generar itinerario
     const payload = { actividades: seleccionadas, dias };
     const res = await fetch('/api/ruta-llm', {
       method: 'POST',
@@ -50,19 +53,62 @@ export default function CrearRuta() {
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    // Debug: muestra la respuesta completa en consola para depuración
     console.log('Respuesta LLM:', data);
-    // Si el itinerario está vacío pero hay texto crudo, muestra el texto crudo para depuración
-    if (Array.isArray(data.itinerario) && data.itinerario.length === 0 && data.raw) {
-      setItinerario(data.raw);
-    } else if (Array.isArray(data.itinerario) && data.itinerario.length > 0) {
-      setItinerario(data.itinerario);
-    } else if (Array.isArray(data.itinerario)) {
-      // Muestra el contenido crudo si los días están vacíos
-      setItinerario(data.raw || []);
-    } else {
-      setItinerario([]);
+
+    let itinerarioFinal = null;
+
+    // 1. Si ya es array y tiene días
+    if (Array.isArray(data.itinerario) && data.itinerario.some(d => d && d.dia && d.actividades)) {
+      itinerarioFinal = data.itinerario;
     }
+    // 2. Si viene como objeto con .itinerario array
+    else if (
+      data.itinerario &&
+      typeof data.itinerario === 'object' &&
+      Array.isArray(data.itinerario.itinerario) &&
+      data.itinerario.itinerario.some(d => d && d.dia && d.actividades)
+    ) {
+      itinerarioFinal = data.itinerario.itinerario;
+    }
+    // 3. Si viene como string JSON
+    else if (data.itinerario && typeof data.itinerario === 'string') {
+      try {
+        const parsed = JSON.parse(data.itinerario);
+        if (Array.isArray(parsed) && parsed.some(d => d && d.dia && d.actividades)) {
+          itinerarioFinal = parsed;
+        } else if (parsed && Array.isArray(parsed.itinerario) && parsed.itinerario.some(d => d && d.dia && d.actividades)) {
+          itinerarioFinal = parsed.itinerario;
+        }
+      } catch {
+        // Si no se puede parsear, sigue buscando en data.raw
+      }
+    }
+    // 4. Si viene en data.raw (string JSON o con ```json)
+    if (!itinerarioFinal && data.raw) {
+      try {
+        let raw = data.raw.trim();
+        if (raw.startsWith('```json')) {
+          raw = raw.replace(/^```json/, '').replace(/```$/, '').trim();
+        } else if (raw.startsWith('```')) {
+          raw = raw.replace(/^```/, '').replace(/```$/, '').trim();
+        }
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.some(d => d && d.dia && d.actividades)) {
+          itinerarioFinal = parsed;
+        } else if (parsed && Array.isArray(parsed.itinerario) && parsed.itinerario.some(d => d && d.dia && d.actividades)) {
+          itinerarioFinal = parsed.itinerario;
+        }
+      } catch {
+        itinerarioFinal = null;
+      }
+    }
+    // 5. Si no se pudo extraer, muestra vacío
+    if (!itinerarioFinal || !Array.isArray(itinerarioFinal) || itinerarioFinal.length === 0) {
+      setItinerario([]);
+      setLoading(false);
+      return;
+    }
+    setItinerario(itinerarioFinal);
     setLoading(false);
   };
 
@@ -227,29 +273,45 @@ export default function CrearRuta() {
         {actividades.map(act => (
           <button
             key={act.nombre}
-            onClick={() => toggleActividad(act.nombre)}
+            onClick={() => {
+              if (!bloquearSeleccion) toggleActividad(act.nombre);
+            }}
+            disabled={bloquearSeleccion}
             style={{
               background: seleccionadas.includes(act.nombre)
-                ? 'linear-gradient(90deg,#2563eb 0%,#22c55e 100%)'
-                : '#e0e7ff',
-              color: seleccionadas.includes(act.nombre) ? '#fff' : '#2563eb',
-              border: seleccionadas.includes(act.nombre) ? '2px solid #22c55e' : '2px solid #e0e7ff',
+                ? (bloquearSeleccion
+                  ? 'linear-gradient(90deg,#cbd5e1 0%,#e0e7ff 100%)'
+                  : 'linear-gradient(90deg,#2563eb 0%,#22c55e 100%)')
+                : (bloquearSeleccion
+                  ? '#f1f5f9'
+                  : '#e0e7ff'),
+              color: seleccionadas.includes(act.nombre)
+                ? (bloquearSeleccion ? '#94a3b8' : '#fff')
+                : (bloquearSeleccion ? '#cbd5e1' : '#2563eb'),
+              border: seleccionadas.includes(act.nombre)
+                ? (bloquearSeleccion ? '2px solid #cbd5e1' : '2px solid #22c55e')
+                : (bloquearSeleccion ? '2px solid #e5e7eb' : '2px solid #e0e7ff'),
               borderRadius: '16px',
               padding: '1.5rem 0.5rem',
               fontSize: '1.15rem',
               fontWeight: 'bold',
-              cursor: 'pointer',
+              cursor: bloquearSeleccion ? 'not-allowed' : 'pointer',
               boxShadow: seleccionadas.includes(act.nombre)
-                ? '0 2px 16px #2563eb33'
-                : '0 2px 8px #2563eb11',
-              transition: 'background 0.2s, border 0.2s',
+                ? (bloquearSeleccion ? 'none' : '0 2px 16px #2563eb33')
+                : (bloquearSeleccion ? 'none' : '0 2px 8px #2563eb11'),
+              opacity: bloquearSeleccion ? 0.7 : 1,
+              transition: 'background 0.2s, border 0.2s, color 0.2s, opacity 0.2s',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               minHeight: '110px'
             }}
           >
-            <span style={{fontSize:'2.2rem', marginBottom:'0.7rem'}}>{act.icon}</span>
+            <span style={{
+              fontSize:'2.2rem',
+              marginBottom:'0.7rem',
+              filter: bloquearSeleccion ? 'grayscale(1) opacity(0.5)' : 'none'
+            }}>{act.icon}</span>
             <span>{act.nombre}</span>
           </button>
         ))}
@@ -279,7 +341,9 @@ export default function CrearRuta() {
           boxShadow: '0 2px 12px #2563eb22'
         }}>
           <button
-            onClick={() => setDias(d => Math.max(0, d - 1))}
+            onClick={() => {
+              if (!bloquearSeleccion) setDias(d => Math.max(0, d - 1));
+            }}
             style={{
               background: '#2563eb',
               color: '#fff',
@@ -288,11 +352,11 @@ export default function CrearRuta() {
               width: '2.5rem',
               height: '2.5rem',
               fontSize: '1.5rem',
-              cursor: dias === 0 ? 'not-allowed' : 'pointer',
-              opacity: dias === 0 ? 0.5 : 1,
+              cursor: dias === 0 || bloquearSeleccion ? 'not-allowed' : 'pointer',
+              opacity: dias === 0 || bloquearSeleccion ? 0.5 : 1,
               transition: 'background 0.2s'
             }}
-            disabled={dias === 0}
+            disabled={dias === 0 || bloquearSeleccion}
             aria-label="Restar día"
           >&#8592;</button>
           <span style={{
@@ -303,7 +367,15 @@ export default function CrearRuta() {
             textAlign: 'center'
           }}>{dias}</span>
           <button
-            onClick={() => setDias(d => Math.min(20, d + 1))}
+            onClick={() => {
+              if (bloquearSeleccion) return;
+              if (dias >= 13) {
+                setShowMaxDiasMsg(true);
+                setTimeout(() => setShowMaxDiasMsg(false), 3500);
+              } else {
+                setDias(d => Math.min(13, d + 1));
+              }
+            }}
             style={{
               background: '#22c55e',
               color: '#fff',
@@ -312,15 +384,33 @@ export default function CrearRuta() {
               width: '2.5rem',
               height: '2.5rem',
               fontSize: '1.5rem',
-              cursor: dias === 20 ? 'not-allowed' : 'pointer',
-              opacity: dias === 20 ? 0.5 : 1,
+              cursor: dias === 13 || bloquearSeleccion ? 'not-allowed' : 'pointer',
+              opacity: dias === 13 || bloquearSeleccion ? 0.5 : 1,
               transition: 'background 0.2s'
             }}
-            disabled={dias === 20}
+            disabled={dias === 13 || bloquearSeleccion}
             aria-label="Sumar día"
           >&#8594;</button>
         </div>
       </div>
+      {/* Mensaje de máximo días */}
+      {showMaxDiasMsg && (
+        <div style={{
+          background: '#fbbf24',
+          color: '#fff',
+          fontWeight: 'bold',
+          borderRadius: '10px',
+          padding: '1rem 1.5rem',
+          margin: '0 auto 1.5rem auto',
+          maxWidth: 420,
+          fontSize: '1.08rem',
+          boxShadow: '0 2px 12px #fbbf2444',
+          textAlign: 'center'
+        }}>
+          Disculpe, por el momento solo se puede generar un itinerario de hasta 13 días.<br />
+          Estamos trabajando para habilitar itinerarios más largos próximamente.
+        </div>
+      )}
       <button
         onClick={handleSiguiente}
         disabled={seleccionadas.length < 3 || dias === 0 || loading}
@@ -368,7 +458,7 @@ export default function CrearRuta() {
               <path d="M44 24a20 20 0 0 1-20 20" stroke="#22c55e" strokeWidth="5" fill="none" strokeLinecap="round"/>
             </svg>
           </span>
-          <span>Estamos preparando la mejor ruta para ti. ¡Un momento por favor!</span>
+          <span>Estamos preparando la mejor ruta para ti, esto puede tardar un rato. ¡Un momento por favor!</span>
           <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg);}
@@ -545,7 +635,10 @@ export default function CrearRuta() {
                 boxShadow: '0 2px 12px #e11d4822',
                 transition: 'background 0.2s'
               }}
-              onClick={() => setShowConfirmRegenerar(true)}
+              onClick={() => {
+                setShowConfirmRegenerar(true);
+                setBloquearSeleccion(false); // Permite cambiar actividades/días al regenerar
+              }}
             >
               🔄 Regenerar otra ruta
             </button>

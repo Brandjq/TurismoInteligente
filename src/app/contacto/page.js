@@ -88,38 +88,149 @@ export default function Reseñas() {
         Comparte tu opinión y ayuda a otros viajeros a tomar mejores decisiones sobre los destinos turísticos.
       </p>
 
-      <form onSubmit={handleSubmit} style={styles.infoBox}>
-        <h2 style={styles.subTitle}>Deja tu reseña</h2>
-        <input
-          type="text"
-          placeholder="Tu nombre"
-          value={nombre}
-          onChange={e => setNombre(e.target.value)}
-          style={{...styles.input, marginBottom: '1rem'}}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Lugar que visitaste"
-          value={lugar}
-          onChange={e => setLugar(e.target.value)}
-          style={{...styles.input, marginBottom: '1rem'}}
-          required
-        />
-        <textarea
-          placeholder="Tu opinión sobre el destino"
-          value={comentario}
-          onChange={e => setComentario(e.target.value)}
-          style={{...styles.input, height: '80px', marginBottom: '1rem'}}
-          required
-        />
-        <div style={{marginBottom: '1rem'}}>
-          <label>Calificación: </label>
-          <select value={calificacion} onChange={e => setCalificacion(Number(e.target.value))} style={styles.input}>
-            {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} estrellas</option>)}
-          </select>
+      <form onSubmit={handleSubmit} style={{
+        ...styles.infoBox,
+        background: 'linear-gradient(120deg,#e0e7ff 60%,#f0fdfa 100%)',
+        boxShadow: '0 4px 24px #2563eb22',
+        border: '2px solid #22c55e',
+        marginBottom: '2.5rem',
+        padding: '2.2rem 2.5rem',
+        borderRadius: '18px',
+        maxWidth: 520,
+        marginLeft: 'auto',
+        marginRight: 'auto'
+      }}>
+        <h2 style={{
+          ...styles.subTitle,
+          color: '#2563eb',
+          fontWeight: 700,
+          marginBottom: '1.5rem',
+          letterSpacing: '0.5px'
+        }}>
+          <span style={{fontSize:'2.1rem', marginRight:'0.7rem'}}>📝</span>
+          Deja tu reseña
+        </h2>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.2rem'
+        }}>
+          <input
+            type="text"
+            placeholder="Tu nombre"
+            value={nombre}
+            onChange={e => setNombre(e.target.value)}
+            style={{
+              ...styles.input,
+              background: '#fff',
+              border: '1.5px solid #2563eb33',
+              fontWeight: 500,
+              fontSize: '1.08rem',
+              boxShadow: '0 2px 8px #2563eb11'
+            }}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Lugar que visitaste"
+            value={lugar}
+            onChange={e => setLugar(e.target.value)}
+            style={{
+              ...styles.input,
+              background: '#fff',
+              border: '1.5px solid #2563eb33',
+              fontWeight: 500,
+              fontSize: '1.08rem',
+              boxShadow: '0 2px 8px #2563eb11'
+            }}
+            required
+          />
+          <textarea
+            placeholder="Tu opinión sobre el destino"
+            value={comentario}
+            onChange={e => setComentario(e.target.value)}
+            style={{
+              ...styles.input,
+              height: '90px',
+              background: '#fff',
+              border: '1.5px solid #2563eb33',
+              fontWeight: 500,
+              fontSize: '1.08rem',
+              boxShadow: '0 2px 8px #2563eb11',
+              resize: 'vertical'
+            }}
+            required
+          />
+          <div style={{
+            marginBottom: '0.5rem',
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.1rem'
+          }}>
+            <label style={{
+              fontWeight: 600,
+              color: '#2563eb',
+              fontSize: '1.13rem',
+              marginBottom: 0
+            }}>Calificación:</label>
+            <span>
+              {[1,2,3,4,5].map(n => (
+                <span
+                  key={n}
+                  onClick={() => setCalificacion(n)}
+                  style={{
+                    cursor: 'pointer',
+                    fontSize: '2.2rem',
+                    color: n <= calificacion ? '#f59e42' : '#cbd5e1',
+                    marginRight: n < 5 ? '0.12em' : 0,
+                    transition: 'color 0.18s, transform 0.18s',
+                    filter: n <= calificacion ? 'drop-shadow(0 2px 6px #fbbf2444)' : 'none',
+                    userSelect: 'none',
+                    transform: n === calificacion ? 'scale(1.18)' : 'scale(1)'
+                  }}
+                  title={`${n} estrella${n > 1 ? 's' : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') setCalificacion(n);
+                  }}
+                  aria-label={`${n} estrella${n > 1 ? 's' : ''}`}
+                >★</span>
+              ))}
+            </span>
+          </div>
+          <button
+            type="submit"
+            style={{
+              background: 'linear-gradient(90deg,#22c55e 0%,#2563eb 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '0.9rem 2.2rem',
+              fontWeight: 'bold',
+              fontSize: '1.18rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              boxShadow: '0 2px 12px #2563eb22',
+              marginTop: '0.7rem',
+              transition: 'background 0.2s'
+            }}
+            disabled={loading}
+          >
+            {loading ? (
+              <span>
+                <span style={{fontSize:'1.5rem', marginRight:'0.7rem'}}>⏳</span>
+                Enviando...
+              </span>
+            ) : (
+              <span>
+                <span style={{fontSize:'1.5rem', marginRight:'0.7rem'}}>✈️</span>
+                Enviar reseña
+              </span>
+            )}
+          </button>
         </div>
-        <button type="submit" style={styles.button} disabled={loading}>{loading ? 'Enviando...' : 'Enviar reseña'}</button>
       </form>
 
       {promedio && (

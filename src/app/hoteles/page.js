@@ -1,10 +1,41 @@
+'use client';
 import AddHotelButton from "./AddHotelButton";
-import { PrismaClient } from "@prisma/client";
+import { useEffect, useState } from "react";
 
-export default async function HotelesPage() {
-  const prisma = new PrismaClient();
-  const hoteles = await prisma.hotel.findMany();
-  await prisma.$disconnect();
+export default function HotelesPage() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [hoteles, setHoteles] = useState([]);
+
+  useEffect(() => {
+    // Detecta si el usuario es admin desde la cookie de sesión
+    const match = document.cookie.match(/session=([^;]+)/);
+    if (match) {
+      try {
+        const session = JSON.parse(decodeURIComponent(match[1]));
+        setIsAdmin(session.isAdmin === true);
+      } catch {}
+    }
+    // Carga hoteles desde la API
+    const fetchHoteles = async () => {
+      const res = await fetch('/api/hoteles');
+      if (res.ok) {
+        setHoteles(await res.json());
+      }
+    };
+    fetchHoteles();
+  }, []);
+
+  // Eliminar hotel (solo admin)
+  const handleDelete = async (id) => {
+    if (!isAdmin) return;
+    if (!window.confirm('¿Seguro que deseas eliminar este hotel?')) return;
+    const res = await fetch('/api/hoteles/' + id, { method: 'DELETE' });
+    if (res.ok) {
+      setHoteles(hoteles.filter(h => h.id !== id));
+    } else {
+      alert('No se pudo eliminar el hotel. Verifica que el endpoint /api/hoteles/[id] exista y acepte DELETE.');
+    }
+  };
 
   return (
     <div
@@ -146,53 +177,57 @@ export default async function HotelesPage() {
             >
               Ver sitio
             </a>
-            {/* Botón eliminar visible solo para admin (cliente) */}
-            <button
-              className="hotel-delete-btn"
-              style={{
-                display: "none", // Se muestra solo si es admin (cliente)
-                position: "absolute",
-                top: 18,
-                right: 18,
-                background: "#e11d48",
-                color: "#fff",
-                border: "none",
-                borderRadius: "50%",
-                width: "2.5rem",
-                height: "2.5rem",
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                cursor: "pointer",
-                boxShadow: "0 2px 12px #e11d4822",
-                zIndex: 10,
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                lineHeight: "2.5rem",
-              }}
-              data-hotel-id={hotel.id}
-              title="Eliminar hotel"
-              type="button"
-            >
-              ×
-            </button>
+            {/* Botón eliminar visible solo para admin */}
+            {isAdmin && (
+              <button
+                className="hotel-delete-btn"
+                style={{
+                  position: "absolute",
+                  top: 18,
+                  right: 18,
+                  background: "#e11d48",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "2.5rem",
+                  height: "2.5rem",
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 12px #e11d4822",
+                  zIndex: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  lineHeight: "2.5rem",
+                  display: "flex"
+                }}
+                title="Eliminar hotel"
+                type="button"
+                onClick={() => handleDelete(hotel.id)}
+              >
+                ×
+              </button>
+            )}
           </div>
         ))}
       </div>
 
       {/* Botón flotante para agregar hotel, solo visible para admin */}
-      <div
-        className="add-hotel-btn"
-        style={{
-          position: "fixed",
-          bottom: 40,
-          right: 40,
-          zIndex: 3000,
-          display: "none", // Solo visible para admin (cliente)
-        }}
-      >
-        <AddHotelButton />
-      </div>
+      {isAdmin && (
+        <div
+          className="add-hotel-btn"
+          style={{
+            position: "fixed",
+            bottom: 40,
+            right: 40,
+            zIndex: 3000,
+            display: "block"
+          }}
+        >
+          <AddHotelButton />
+        </div>
+      )}
 
       {/* Animaciones y responsive */}
       <style>{`
@@ -202,14 +237,6 @@ export default async function HotelesPage() {
         }
         .hotel-card:hover .hotel-img {
           transform: scale(1.13);
-        }
-        /* Mostrar botón eliminar solo si es admin (cliente) */
-        body[data-admin="true"] .hotel-delete-btn {
-          display: flex !important;
-        }
-        /* Mostrar botón agregar solo si es admin (cliente) */
-        body[data-admin="true"] .add-hotel-btn {
-          display: block !important;
         }
         .hotel-delete-btn:hover {
           background: #be123c;
@@ -222,47 +249,6 @@ export default async function HotelesPage() {
           .add-hotel-btn { bottom: 20px !important; right: 20px !important; transform: scale(0.9); }
         }
       `}</style>
-      {/* Script para mostrar botones de admin en cliente */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-        (function() {
-          try {
-            var isAdmin = false;
-            var match = document.cookie.match(/session=([^;]+)/);
-            if (match) {
-              var session = JSON.parse(decodeURIComponent(match[1]));
-              isAdmin = session.isAdmin === true;
-            }
-            if (isAdmin) {
-              document.body.setAttribute('data-admin', 'true');
-              document.querySelectorAll('.hotel-delete-btn').forEach(btn => {
-                btn.style.display = 'flex';
-                btn.onclick = async function() {
-                  if (confirm('¿Seguro que deseas eliminar este hotel?')) {
-                    const id = btn.getAttribute('data-hotel-id');
-                    const res = await fetch('/api/hoteles/' + id, { method: 'DELETE' });
-                    if (res.ok) {
-                      location.reload();
-                    } else {
-                      alert('No se pudo eliminar el hotel. Verifica que el endpoint /api/hoteles/[id] exista y acepte DELETE.');
-                    }
-                  }
-                };
-              });
-              // Mostrar el botón de agregar hotel solo para admin
-              var addBtn = document.querySelector('.add-hotel-btn');
-              if (addBtn) addBtn.style.display = 'block';
-            } else {
-              // Oculta el botón de agregar hotel si no es admin
-              var addBtn = document.querySelector('.add-hotel-btn');
-              if (addBtn) addBtn.style.display = 'none';
-            }
-          } catch(e){}
-        })();
-        `,
-        }}
-      />
     </div>
   );
 }

@@ -43,6 +43,7 @@ export default function Home() {
     }
   }, []);
   const [current, setCurrent] = useState(0);
+  const [showChat, setShowChat] = useState(false); // Controla si se muestra el chatbot
 
   // Cambia la imagen automáticamente cada 3 segundos
   // Guardar infoBlocks en localStorage cada vez que cambian
@@ -73,6 +74,29 @@ export default function Home() {
       }
     }
   }, [router]);
+
+  const [faq, setFaq] = useState([
+    { question: "¿Cuál es la mejor época para visitar Sololá?", answer: "La mejor época es entre noviembre y abril, cuando el clima es más seco.", show: false },
+    { question: "¿Qué actividades puedo hacer en el Lago de Atitlán?", answer: "Puedes hacer kayak, senderismo, tours en lancha, y visitar los pueblos alrededor del lago.", show: false },
+    { question: "¿Dónde puedo comprar artesanías locales?", answer: "El mercado de Sololá y los pueblos como Santiago Atitlán son excelentes opciones.", show: false },
+    { question: "¿Es seguro viajar a Sololá?", answer: "Sí, Sololá es un destino turístico seguro. Sin embargo, siempre es recomendable tomar precauciones básicas.", show: false },
+    { question: "¿Qué idiomas se hablan en Sololá?", answer: "En Sololá se hablan Kaqchikel, Tz’utujil, K’iche’ y español.", show: false },
+    { question: "¿Cómo puedo llegar a Sololá desde la Ciudad de Guatemala?", answer: "Puedes llegar en bus, en vehículo propio o contratando un tour. El acceso principal es por la carretera Interamericana CA-1.", show: false },
+    { question: "¿Qué pueblos alrededor del lago debo visitar?", answer: "Algunos de los pueblos más recomendados son Panajachel, San Pedro La Laguna, Santiago Atitlán y San Marcos La Laguna.", show: false },
+    { question: "¿Hay opciones de hospedaje en Sololá?", answer: "Sí, hay una variedad de hoteles, hostales y casas rurales en Sololá y los pueblos cercanos al lago.", show: false },
+    { question: "¿Qué tipo de comida típica puedo probar en Sololá?", answer: "Puedes probar platillos como el pepián, tamales, atol de elote y pescados frescos del lago.", show: false },
+    { question: "¿Cuánto tiempo se recomienda para visitar Sololá?", answer: "Se recomienda al menos 3 días para explorar el lago, los pueblos y las actividades disponibles.", show: false },
+    { question: "¿Qué ropa debo llevar para mi visita?", answer: "Lleva ropa cómoda, zapatos para caminar, protector solar y una chaqueta ligera para las noches frescas.", show: false },
+    { question: "¿Hay guías turísticos disponibles?", answer: "Sí, puedes contratar guías locales en los pueblos o a través de agencias de turismo.", show: false },
+  ]);
+
+  const toggleAnswer = (index) => {
+    setFaq((prevFaq) =>
+      prevFaq.map((item, idx) =>
+        idx === index ? { ...item, show: !item.show } : item
+      )
+    );
+  };
 
   return (
     <>
@@ -732,6 +756,166 @@ export default function Home() {
         © {new Date().getFullYear()} Todos los derechos reservados. Desarrollado por Brandon Nájera.
       </footer>
       */}
+      {/* Botón flotante del chatbot */}
+      <div style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 9999,
+        textAlign: 'center',
+      }}>
+        <div style={{
+          position: 'relative',
+          display: 'inline-block',
+          width: '80px',
+          height: '80px',
+        }}>
+          <button
+            onClick={() => setShowChat(!showChat)}
+            style={{
+              background: '#2563eb',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '50%',
+              width: '60px',
+              height: '60px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              transition: 'transform 0.2s',
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              zIndex: 2,
+              animation: 'blink 1.5s infinite', // Efecto de parpadeo
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            🤖
+          </button>
+          <svg
+            viewBox="0 0 100 100"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              transform: 'rotate(-90deg)',
+            }}
+          >
+            <path
+              d="M50,10 a40,40 0 1,1 -0.1,0"
+              fill="none"
+              stroke="transparent"
+              id="textPath"
+            />
+            <text fill="#2563eb" fontSize="20" fontWeight="bold" style={{ textShadow: '1px 1px 4px #000' }}> {/* Mejora en la legibilidad */}
+              <textPath href="#textPath" startOffset="50%" textAnchor="middle">
+                Preguntas Frecuentes
+              </textPath>
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes blink {
+          0%, 100% { box-shadow: 0 0 12px rgba(37, 99, 235, 0.8); }
+          50% { box-shadow: 0 0 24px rgba(37, 99, 235, 1); }
+        }
+      `}</style>
+
+      {/* Ventana emergente del chatbot */}
+      {showChat && (
+        <div style={{
+          position: 'fixed',
+          bottom: '90px',
+          right: '20px',
+          width: '320px',
+          maxHeight: '400px',
+          background: '#fff',
+          borderRadius: '16px',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+          overflow: 'hidden',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+          <div style={{
+            background: '#2563eb',
+            color: '#fff',
+            padding: '12px 16px',
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+            <span>Chat de Preguntas</span>
+            <button
+              onClick={() => setShowChat(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#fff',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+              }}
+            >
+              ✖
+            </button>
+          </div>
+          <div style={{
+            padding: '12px',
+            overflowY: 'auto',
+            flex: 1,
+          }}>
+            {faq.map((item, idx) => (
+              <div key={idx} style={{
+                marginBottom: '12px',
+                padding: '10px',
+                borderRadius: '8px',
+                background: '#f1f5f9',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                cursor: 'pointer',
+              }}
+                onClick={() => toggleAnswer(idx)}
+              >
+                <p style={{ fontWeight: 'bold', marginBottom: '6px', color: '#2563eb' }}>
+                  {item.question}
+                </p>
+                {item.show && (
+                  <p style={{ fontSize: '0.95rem', color: '#475569' }}>
+                    {item.answer}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{
+            padding: '12px',
+            borderTop: '1px solid #e2e8f0',
+            textAlign: 'center',
+          }}>
+            <a
+              href="/contacto-chatbot" // Cambiado para redirigir a la nueva página
+              style={{
+                fontSize: '0.9rem',
+                color: '#2563eb',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+            >
+              Contáctanos
+            </a>
+          </div>
+        </div>
+      )}
     </>
   );
 }

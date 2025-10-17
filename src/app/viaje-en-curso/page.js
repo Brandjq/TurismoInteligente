@@ -6,6 +6,10 @@ export default function ViajeEnCurso() {
   const [itinerario, setItinerario] = useState([]);
   const [checklist, setChecklist] = useState({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showSurvey, setShowSurvey] = useState(false); // Controla si se muestra la encuesta
+  const [rating, setRating] = useState(0); // Calificación de 1 a 5
+  const [recommend, setRecommend] = useState(null); // Si recomendaría el sistema
+  const [showThankYou, setShowThankYou] = useState(false); // Controla si se muestra el agradecimiento
   const router = useRouter();
   const confettiRef = useRef(null);
 
@@ -19,7 +23,27 @@ export default function ViajeEnCurso() {
     if (checklistGuardado) {
       setChecklist(JSON.parse(checklistGuardado));
     }
+
+    // Mostrar la encuesta después de 5 segundos en la página
+    const surveyTimer = setTimeout(() => {
+      setShowSurvey(true);
+    }, 5000);
+
+    return () => clearTimeout(surveyTimer);
   }, []);
+
+  const handleSurveySubmit = () => {
+    // Aquí puedes enviar los datos de la encuesta a tu backend si es necesario
+    console.log('Calificación:', rating);
+    console.log('¿Recomendaría el sistema?:', recommend ? 'Sí' : 'No');
+    setShowSurvey(false); // Cierra el modal de encuesta
+    setShowThankYou(true); // Muestra el mensaje de agradecimiento
+
+    // Oculta el mensaje de agradecimiento después de 3 segundos
+    setTimeout(() => {
+      setShowThankYou(false);
+    }, 3000);
+  };
 
   const handleCheck = (diaIdx, actIdx) => {
     setChecklist(prev => {
@@ -131,6 +155,137 @@ export default function ViajeEnCurso() {
           100% { opacity: 0; }
         }
       `}</style>
+      {/* Encuesta de satisfacción */}
+      {showSurvey && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: '#fff',
+            padding: '20px 30px',
+            borderRadius: '10px',
+            textAlign: 'center',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+            maxWidth: '400px',
+            width: '90%'
+          }}>
+            <h2 style={{ color: '#2563eb', marginBottom: '10px' }}>Encuesta de Satisfacción</h2>
+            <p style={{ marginBottom: '20px', fontSize: '1rem', color: '#555' }}>¿Qué tan satisfecho estás con la ruta?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
+              {[1, 2, 3, 4, 5].map(num => (
+                <button
+                  key={num}
+                  onClick={() => setRating(num)}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    background: rating === num ? '#2563eb' : '#e0e7ff',
+                    color: rating === num ? '#fff' : '#2563eb',
+                    border: 'none',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'background 0.3s, color 0.3s'
+                  }}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+            <p style={{ marginBottom: '20px', fontSize: '1rem', color: '#555' }}>¿Recomendarías este sistema de turismo?</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
+              <button
+                onClick={() => setRecommend(true)}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  background: recommend === true ? '#22c55e' : '#e0e7ff',
+                  color: recommend === true ? '#fff' : '#2563eb',
+                  border: 'none',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'background 0.3s, color 0.3s'
+                }}
+              >
+                Sí
+              </button>
+              <button
+                onClick={() => setRecommend(false)}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  background: recommend === false ? '#e11d48' : '#e0e7ff',
+                  color: recommend === false ? '#fff' : '#2563eb',
+                  border: 'none',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'background 0.3s, color 0.3s'
+                }}
+              >
+                No
+              </button>
+            </div>
+            <button
+              onClick={handleSurveySubmit}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                background: '#2563eb',
+                color: '#fff',
+                border: 'none',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                marginTop: '10px'
+              }}
+              disabled={rating === 0 || recommend === null}
+            >
+              Enviar
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Mensaje de agradecimiento */}
+      {showThankYou && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: '#22c55e',
+            padding: '20px 30px',
+            borderRadius: '10px',
+            textAlign: 'center',
+            color: '#fff',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+            maxWidth: '400px',
+            width: '90%'
+          }}>
+            <h2 style={{ marginBottom: '10px' }}>¡Gracias por tu opinión!</h2>
+            <p style={{ fontSize: '1rem' }}>Tu respuesta nos ayuda a mejorar nuestro sistema de turismo.</p>
+          </div>
+        </div>
+      )}
       {/* Barra de progreso mejorada */}
       <div style={{
         marginBottom: '2.2rem',

@@ -32,17 +32,11 @@ export default function Reseñas() {
       } catch {}
     }
 
-    const storedFeedback = localStorage.getItem('feedbackSistema');
-    if (storedFeedback) {
-      try {
-        const parsedFeedback = JSON.parse(storedFeedback);
-        setFeedbackSistema(Array.isArray(parsedFeedback) ? parsedFeedback : []); // Asegúrate de que sea un array
-      } catch {
-        setFeedbackSistema([]); // Si falla el parseo, inicializa como un array vacío
-      }
-    } else {
-      setFeedbackSistema([]); // Si no hay datos en localStorage, inicializa como un array vacío
-    }
+    // Recuperar opiniones del sistema desde la base de datos
+    fetch('/api/reviews/system-feedback')
+      .then(res => res.json())
+      .then(data => setFeedbackSistema(data))
+      .catch(() => setFeedbackSistema([])); // Si falla, inicializa como un array vacío
   }, []);
 
   const handleSubmit = async (e) => {
@@ -67,16 +61,38 @@ export default function Reseñas() {
     setLoading(false);
   };
 
-  const handleSistemaFeedback = (e) => {
+  const handleSistemaFeedback = async (e) => {
     e.preventDefault();
-    if (!nombreSistema || !comentarioSistema) return;
+    if (!nombreSistema || !comentarioSistema) {
+      console.error('Todos los campos son obligatorios');
+      return;
+    }
+
     const newFeedback = { nombre: nombreSistema, calificacion: calificacionSistema, comentario: comentarioSistema };
-    const updatedFeedback = [newFeedback, ...feedbackSistema]; // Add new feedback to the beginning of the array
-    setFeedbackSistema(updatedFeedback);
-    localStorage.setItem('feedbackSistema', JSON.stringify(updatedFeedback));
-    setNombreSistema('');
-    setComentarioSistema('');
-    setCalificacionSistema(5);
+    console.log('Enviando datos al servidor:', newFeedback);
+
+    try {
+      const res = await fetch('/api/reviews/system-feedback', { // URL corregida
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newFeedback),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Error desconocido');
+      }
+
+      const savedFeedback = await res.json();
+      console.log('Respuesta del servidor:', savedFeedback);
+
+      setFeedbackSistema([savedFeedback, ...feedbackSistema]);
+      setNombreSistema('');
+      setComentarioSistema('');
+      setCalificacionSistema(5);
+    } catch (error) {
+      console.error('Error al enviar la opinión:', error.message);
+    }
   };
 
   const promedio = reseñas.length ? (reseñas.reduce((acc, r) => acc + r.calificacion, 0) / reseñas.length).toFixed(1) : null;

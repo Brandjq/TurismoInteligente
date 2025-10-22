@@ -13,6 +13,10 @@ export default function Reseñas() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [calificacionSistema, setCalificacionSistema] = useState(5);
+  const [comentarioSistema, setComentarioSistema] = useState('');
+  const [nombreSistema, setNombreSistema] = useState('');
+  const [feedbackSistema, setFeedbackSistema] = useState([]); // Change to an array to store multiple feedbacks
   const router = useRouter();
 
   useEffect(() => {
@@ -26,6 +30,18 @@ export default function Reseñas() {
         const session = JSON.parse(decodeURIComponent(match[1]));
         setIsAdmin(session.isAdmin === true);
       } catch {}
+    }
+
+    const storedFeedback = localStorage.getItem('feedbackSistema');
+    if (storedFeedback) {
+      try {
+        const parsedFeedback = JSON.parse(storedFeedback);
+        setFeedbackSistema(Array.isArray(parsedFeedback) ? parsedFeedback : []); // Asegúrate de que sea un array
+      } catch {
+        setFeedbackSistema([]); // Si falla el parseo, inicializa como un array vacío
+      }
+    } else {
+      setFeedbackSistema([]); // Si no hay datos en localStorage, inicializa como un array vacío
     }
   }, []);
 
@@ -49,6 +65,18 @@ export default function Reseñas() {
       setTimeout(() => setShowModal(false), 2500);
     }
     setLoading(false);
+  };
+
+  const handleSistemaFeedback = (e) => {
+    e.preventDefault();
+    if (!nombreSistema || !comentarioSistema) return;
+    const newFeedback = { nombre: nombreSistema, calificacion: calificacionSistema, comentario: comentarioSistema };
+    const updatedFeedback = [newFeedback, ...feedbackSistema]; // Add new feedback to the beginning of the array
+    setFeedbackSistema(updatedFeedback);
+    localStorage.setItem('feedbackSistema', JSON.stringify(updatedFeedback));
+    setNombreSistema('');
+    setComentarioSistema('');
+    setCalificacionSistema(5);
   };
 
   const promedio = reseñas.length ? (reseñas.reduce((acc, r) => acc + r.calificacion, 0) / reseñas.length).toFixed(1) : null;
@@ -260,6 +288,129 @@ export default function Reseñas() {
               <p style={{marginTop:'0.5rem'}}>{r.comentario}</p>
             </div>
           ))
+        )}
+      </div>
+
+      <div style={{ marginTop: '3rem' }}>
+        <h2 style={styles.subTitle}>Califica el sistema</h2>
+        <form onSubmit={handleSistemaFeedback} style={{
+          ...styles.infoBox,
+          background: 'linear-gradient(120deg,#f0fdfa 60%,#e0e7ff 100%)',
+          boxShadow: '0 4px 24px #2563eb22',
+          border: '2px solid #2563eb',
+          padding: '2rem',
+          borderRadius: '18px',
+          maxWidth: 520,
+          margin: '0 auto',
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.2rem'
+          }}>
+            <input
+              type="text"
+              placeholder="Tu nombre"
+              value={nombreSistema}
+              onChange={e => setNombreSistema(e.target.value)}
+              style={{
+                ...styles.input,
+                background: '#fff',
+                border: '1.5px solid #2563eb33',
+                fontWeight: 500,
+                fontSize: '1.08rem',
+                boxShadow: '0 2px 8px #2563eb11'
+              }}
+              required
+            />
+            <textarea
+              placeholder="¿Qué opinas sobre el funcionamiento del sistema?"
+              value={comentarioSistema}
+              onChange={e => setComentarioSistema(e.target.value)}
+              style={{
+                ...styles.input,
+                height: '90px',
+                background: '#fff',
+                border: '1.5px solid #2563eb33',
+                fontWeight: 500,
+                fontSize: '1.08rem',
+                boxShadow: '0 2px 8px #2563eb11',
+                resize: 'vertical'
+              }}
+              required
+            />
+            <div style={{
+              marginBottom: '0.5rem',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '1.1rem'
+            }}>
+              <label style={{
+                fontWeight: 600,
+                color: '#2563eb',
+                fontSize: '1.13rem',
+                marginBottom: 0
+              }}>Calificación:</label>
+              <span>
+                {[1, 2, 3, 4, 5].map(n => (
+                  <span
+                    key={n}
+                    onClick={() => setCalificacionSistema(n)}
+                    style={{
+                      cursor: 'pointer',
+                      fontSize: '2.2rem',
+                      color: n <= calificacionSistema ? '#f59e42' : '#cbd5e1',
+                      marginRight: n < 5 ? '0.12em' : 0,
+                      transition: 'color 0.18s, transform 0.18s',
+                      filter: n <= calificacionSistema ? 'drop-shadow(0 2px 6px #fbbf2444)' : 'none',
+                      userSelect: 'none',
+                      transform: n === calificacionSistema ? 'scale(1.18)' : 'scale(1)'
+                    }}
+                    title={`${n} estrella${n > 1 ? 's' : ''}`}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') setCalificacionSistema(n);
+                    }}
+                    aria-label={`${n} estrella${n > 1 ? 's' : ''}`}
+                  >★</span>
+                ))}
+              </span>
+            </div>
+            <button
+              type="submit"
+              style={{
+                background: 'linear-gradient(90deg,#2563eb 0%,#22c55e 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0.9rem 2.2rem',
+                fontWeight: 'bold',
+                fontSize: '1.18rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 12px #2563eb22',
+                marginTop: '0.7rem',
+                transition: 'background 0.2s'
+              }}
+            >
+              Enviar opinión
+            </button>
+          </div>
+        </form>
+        {feedbackSistema.length > 0 && (
+          <div style={{ ...styles.infoBox, marginTop: '2rem' }}>
+            <h3 style={{ color: '#2563eb' }}>Opiniones sobre el sistema:</h3>
+            {feedbackSistema.map((feedback, index) => (
+              <div key={index} style={{ marginBottom: '1rem', textAlign: 'left' }}>
+                <p><strong>Nombre:</strong> {feedback.nombre}</p>
+                <p><strong>Calificación:</strong> {feedback.calificacion} / 5</p>
+                <p><strong>Comentario:</strong> {feedback.comentario}</p>
+                <hr style={{ border: '1px solid #e2e8f0', margin: '1rem 0' }} />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

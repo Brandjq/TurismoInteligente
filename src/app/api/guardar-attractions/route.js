@@ -5,7 +5,16 @@ if (process.env.NODE_ENV === 'development') global.prisma = prisma;
 
 export async function POST(req) {
   try {
-    const { name, description, map_link, image_url } = await req.json();
+    // Intentar analizar el cuerpo de la solicitud
+    let body;
+    try {
+      body = await req.json();
+    } catch (jsonError) {
+      console.error('Error al analizar el cuerpo de la solicitud:', jsonError.message);
+      return Response.json({ error: 'El cuerpo de la solicitud debe ser un JSON válido' }, { status: 400 });
+    }
+
+    const { name, description, map_link, image_url } = body;
 
     console.log('Datos recibidos:', { name, description, map_link, image_url }); // Log para verificar los datos recibidos
 

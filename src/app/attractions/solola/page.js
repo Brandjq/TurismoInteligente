@@ -338,9 +338,6 @@ const handleDelete = async (id) => {
   }
 
   try {
-    // Actualizar el estado local antes de realizar la solicitud
-    setAttractions((prev) => prev.filter((attraction) => attraction.id !== id));
-
     const res = await fetch('/api/guardar-attractions', {
       method: 'DELETE', // Asegúrate de usar el método DELETE
       headers: {
@@ -354,13 +351,12 @@ const handleDelete = async (id) => {
       throw new Error(errorData.error || 'Error desconocido al eliminar la atracción');
     }
 
+    // Actualizar el estado local después de la confirmación del servidor
+    setAttractions((prev) => prev.filter((attraction) => attraction.id !== id));
     alert('¡Atracción eliminada con éxito!');
   } catch (err) {
     console.error('Error al eliminar la atracción:', err.message);
     alert(err.message);
-
-    // Restaurar el estado si ocurre un error
-    setAttractions((prev) => [...prev, attractions.find((attraction) => attraction.id === id)]);
   }
 };
 

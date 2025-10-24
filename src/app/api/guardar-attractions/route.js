@@ -31,6 +31,9 @@ export async function POST(req) {
       return Response.json({ error: 'El nombre de la atracción ya existe' }, { status: 409 });
     }
 
+    // Log detallado para otros errores
+    console.error('Detalles del error:', error.message, error.stack);
+
     return Response.json({ error: 'Error interno del servidor', details: error.message }, { status: 500 });
   }
 }

@@ -10,7 +10,6 @@ export default function NewAttractionForm({ onClose, onSave }) {
   });
 
   const [message, setMessage] = useState(null); // Para mensajes de éxito/error
-  const [showMsg, setShowMsg] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = (e) => {
@@ -21,9 +20,7 @@ export default function NewAttractionForm({ onClose, onSave }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.image) {
-      setMessage('Por favor selecciona una imagen.');
-      setShowMsg(true);
-      setTimeout(() => setShowMsg(false), 2000);
+      alert('Por favor selecciona una imagen.');
       return;
     }
 
@@ -36,14 +33,14 @@ export default function NewAttractionForm({ onClose, onSave }) {
 
     try {
       const res = await fetch('/api/guardar-attractions', {
-        method: 'POST',
+        method: 'POST', // Asegúrate de que el método sea POST
         body: formData,
       });
 
       if (res.ok) {
         const data = await res.json();
         setMessage('¡Atractivo guardado con éxito!');
-        setShowMsg(true);
+        // Normalizar el objeto para el frontend
         onSave({
           name: data.name,
           description: data.description,
@@ -51,26 +48,24 @@ export default function NewAttractionForm({ onClose, onSave }) {
           map_link: data.map_link,
         });
         setTimeout(() => {
-          setShowMsg(false);
           setMessage(null);
           onClose();
         }, 2000);
       } else {
-        setMessage('Error al guardar el atractivo.');
-        setShowMsg(true);
-        setTimeout(() => setShowMsg(false), 2000);
+        const errorData = await res.json();
+        setMessage(errorData.error || 'Error al guardar el atractivo.');
       }
-    } catch {
+    } catch (err) {
+      console.error('Error de conexión:', err);
       setMessage('Error de conexión.');
-      setShowMsg(true);
-      setTimeout(() => setShowMsg(false), 2000);
     }
     setLoading(false);
   };
 
-  const [confirmCancel, setConfirmCancel] = useState(false);
   const handleCancel = () => {
-    setConfirmCancel(true);
+    if (window.confirm('¿Seguro que quieres cancelar? Los datos no guardados se perderán.')) {
+      onClose();
+    }
   };
 
   return (
@@ -171,71 +166,18 @@ export default function NewAttractionForm({ onClose, onSave }) {
             required={!form.image}
           />
 
-          {/* Modal de confirmación para cancelar */}
-          {confirmCancel && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.25)',
-              zIndex: 3000,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <div style={{
-                background: 'white',
-                borderRadius: '16px',
-                padding: '2rem 2.5rem',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+          {/* Mensaje de éxito o error */}
+          {message && (
+            <p
+              style={{
                 textAlign: 'center',
-                minWidth: '280px',
-              }}>
-                <h3 style={{marginBottom:'1rem', color:'#e53e3e'}}>¿Seguro que quieres cancelar el registro?</h3>
-                <div style={{display:'flex', justifyContent:'center', gap:'1.5rem'}}>
-                  <button
-                    style={{background:'#e53e3e', color:'white', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontWeight:'bold', cursor:'pointer'}}
-                    onClick={() => {
-                      setMessage('Registro cancelado.');
-                      setShowMsg(true);
-                      setTimeout(() => {
-                        setShowMsg(false);
-                        setMessage(null);
-                        setConfirmCancel(false);
-                        onClose();
-                      }, 1500);
-                    }}
-                  >Sí, cancelar</button>
-                  <button
-                    style={{background:'#3182ce', color:'white', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontWeight:'bold', cursor:'pointer'}}
-                    onClick={() => setConfirmCancel(false)}
-                  >No, volver</button>
-                </div>
-              </div>
-            </div>
-          )}
-          {/* Mensaje visual tipo modal flotante */}
-          {showMsg && (
-            <div style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: message && message.includes('éxito') ? '#38a169' : '#e53e3e',
-              color: 'white',
-              padding: '1.2rem 2.2rem',
-              borderRadius: '14px',
-              fontWeight: 'bold',
-              fontSize: '1.2rem',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-              zIndex: 2000,
-              textAlign: 'center',
-              animation: 'popIn 0.3s',
-            }}>
+                color: message.includes('éxito') ? 'green' : 'red',
+                fontWeight: 'bold',
+                marginTop: '5px',
+              }}
+            >
               {message}
-            </div>
+            </p>
           )}
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>

@@ -332,6 +332,38 @@ export default function Solola() {
     fetchAttractions();
   }, []);
 
+const handleDelete = async (id) => {
+  if (!confirm('¿Estás seguro de que deseas eliminar esta atracción?')) {
+    return;
+  }
+
+  try {
+    // Actualizar el estado local antes de realizar la solicitud
+    setAttractions((prev) => prev.filter((attraction) => attraction.id !== id));
+
+    const res = await fetch('/api/guardar-attractions', {
+      method: 'DELETE', // Asegúrate de usar el método DELETE
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }), // Enviar el ID en el cuerpo de la solicitud
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Error desconocido al eliminar la atracción');
+    }
+
+    alert('¡Atracción eliminada con éxito!');
+  } catch (err) {
+    console.error('Error al eliminar la atracción:', err.message);
+    alert(err.message);
+
+    // Restaurar el estado si ocurre un error
+    setAttractions((prev) => [...prev, attractions.find((attraction) => attraction.id === id)]);
+  }
+};
+
 return (
   <main className={styles.container}>
    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>

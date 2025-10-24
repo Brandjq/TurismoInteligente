@@ -15,10 +15,19 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    const { name, description, map_link, image_url } = await req.json();
+    let body;
+    try {
+      body = await req.json(); // Intentar analizar el cuerpo de la solicitud
+    } catch (jsonError) {
+      console.error('Error al analizar el cuerpo de la solicitud:', jsonError.message);
+      return Response.json({ error: 'El cuerpo de la solicitud debe ser un JSON válido' }, { status: 400 });
+    }
+
+    const { name, description, map_link, image_url } = body;
 
     // Validar los datos recibidos
     if (!name || !description) {
+      console.error('Validación fallida: El nombre y la descripción son obligatorios');
       return Response.json({ error: 'El nombre y la descripción son obligatorios' }, { status: 400 });
     }
 
@@ -27,6 +36,7 @@ export async function POST(req) {
       data: { name, description, map_link, image_url },
     });
 
+    console.log('Atracción guardada exitosamente:', newAttraction);
     return Response.json(newAttraction, { status: 201 });
   } catch (error) {
     console.error('Error al guardar la atracción:', error);
@@ -36,16 +46,25 @@ export async function POST(req) {
       return Response.json({ error: 'El nombre de la atracción ya existe' }, { status: 409 });
     }
 
-    return Response.json({ error: 'Error interno del servidor' }, { status: 500 });
+    return Response.json({ error: 'Error interno del servidor', details: error.message }, { status: 500 });
   }
 }
 
 export async function DELETE(req) {
   try {
-    const { id } = await req.json();
+    let body;
+    try {
+      body = await req.json(); // Intentar analizar el cuerpo de la solicitud
+    } catch (jsonError) {
+      console.error('Error al analizar el cuerpo de la solicitud:', jsonError.message);
+      return Response.json({ error: 'El cuerpo de la solicitud debe ser un JSON válido' }, { status: 400 });
+    }
+
+    const { id } = body;
 
     // Validar el ID recibido
     if (!id) {
+      console.error('Validación fallida: El ID es obligatorio para eliminar una atracción');
       return Response.json({ error: 'El ID es obligatorio para eliminar una atracción' }, { status: 400 });
     }
 
@@ -54,6 +73,7 @@ export async function DELETE(req) {
       where: { id },
     });
 
+    console.log('Atracción eliminada exitosamente:', deletedAttraction);
     return Response.json(deletedAttraction, { status: 200 });
   } catch (error) {
     console.error('Error al eliminar la atracción:', error);
@@ -63,6 +83,6 @@ export async function DELETE(req) {
       return Response.json({ error: 'La atracción no existe o ya fue eliminada' }, { status: 404 });
     }
 
-    return Response.json({ error: 'Error interno del servidor' }, { status: 500 });
+    return Response.json({ error: 'Error interno del servidor', details: error.message }, { status: 500 });
   }
 }

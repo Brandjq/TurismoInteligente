@@ -1,57 +1,31 @@
-import prisma from '../../../../lib/prisma';
-import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import { PrismaClient } from '@prisma/client';
 
-// Asegúrate de configurar las variables de entorno antes de usar cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV === 'development') global.prisma = prisma;
 
-export const dynamic = 'force-dynamic';
-
-export async function POST(request) {
+export async function POST(req) {
   try {
-    const data = await request.formData();
+    const { name, description, map_link, image_url } = await req.json();
 
-    const name = data.get('name');
-    const description = data.get('description');
-    const map_link = data.get('mapLink');
-    const imageFile = data.get('image');
-
-    let imageUrl = '';
-    if (imageFile && typeof imageFile !== 'string') {
-      const arrayBuffer = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      // Subir a Cloudinary
-      const uploadPromise = () =>
-        new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { folder: 'atractivos' },
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result);
-            }
-          );
-          stream.end(buffer);
-        });
-      const uploadResult = await uploadPromise();
-      imageUrl = uploadResult.secure_url;
+    // Validar los datos recibidos
+    if (!name || !description) {
+      return Response.json({ error: 'El nombre y la descripción son obligatorios' }, { status: 400 });
     }
 
-    const nuevaAtraccion = await prisma.attractions.create({
-      data: {
-        name,
-        description,
-        map_link,
-        image_url: imageUrl,
-      },
+    // Intentar guardar la atracción en la base de datos
+    const newAttraction = await prisma.attractions.create({
+      data: { name, description, map_link, image_url },
     });
 
-    return NextResponse.json(nuevaAtraccion, { status: 201 });
+    return Response.json(newAttraction, { status: 201 });
   } catch (error) {
-    console.error('Error al guardar:', error);
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    console.error('Error al guardar la atracción:', error);
+
+    // Manejo de errores específicos
+    if (error.code === 'P2002') {
+      return Response.json({ error: 'El nombre de la atracción ya existe' }, { status: 409 });
+    }
+
+    return Response.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
